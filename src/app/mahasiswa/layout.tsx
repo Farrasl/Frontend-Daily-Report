@@ -1,11 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import AddTaskModal from './components/addtaskmodal';
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+
   return (
     <main>
       <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen">
@@ -39,14 +45,14 @@ export default function RootLayout({
                       </defs>
                     </svg>
 
-                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
                       Dashboard
                     </span>
                   </Link>
                 </li>
                 <li className="relative group">
                   <Link
-                    href="/mahasiswa/bimbingan"
+                    href="/mahasiswa/daily-report"
                     className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
                   >
                     <svg
@@ -68,8 +74,8 @@ export default function RootLayout({
                         </clipPath>
                       </defs>
                     </svg>
-                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
-                      Bimbingan
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                      Daily Report
                     </span>
                   </Link>
                 </li>
@@ -108,7 +114,7 @@ export default function RootLayout({
                     </defs>
                   </svg>
 
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
+                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
                     Logout
                   </span>
                 </Link>
@@ -136,7 +142,7 @@ export default function RootLayout({
               <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] animate-spin"></div>
             </div>
             <h3 className="font-bold text-lg">Abmi Sukma</h3>
-            <p className="text-[#C5C5C5] text-sm">Mahasiswa</p>
+            <p className="text-[#C5C5C5] text-sm">12250111</p>
             <p className="text-[#C5C5C5] text-sm">
               PT. Pertamina Kota Pekanbaru
             </p>
@@ -147,7 +153,7 @@ export default function RootLayout({
             <h3 className="text-lg mt-5">
               <b>Supervisor</b>
             </h3>
-            <div className="flex items-center bg-[#FFBF5F] rounded-md p-3 mb-2">
+            <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
               <Image
                 src="/avatar.png"
                 alt="Supervisor 1"
@@ -160,7 +166,7 @@ export default function RootLayout({
                 <p className="text-xs text-[#C5C5C5]">Dosen Pembimbing</p>
               </div>
             </div>
-            <div className="flex items-center bg-[#FFBF5F] rounded-md p-3 mb-2">
+            <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
               <Image
                 src="/avatar.png"
                 alt="Supervisor 2"
@@ -175,12 +181,15 @@ export default function RootLayout({
             </div>
           </div>
 
-          {/* Report Button */}
+          {/* Report Button with Modal */}
           <div className="report-section mt-10 mb-5 text-left">
             <h3 className="text-lg">
               <b>Buat Laporan</b>
             </h3>
-            <div className="bg-[#2C707B] text-white flex flex-col rounded-md p-6">
+            <div 
+              className="bg-[#2C707B] text-white flex flex-col rounded-md p-6 cursor-pointer"
+              onClick={() => setIsAddTaskModalOpen(true)}
+            >
               <p>Tambah laporan harian mu sekarang</p>
               <svg
                 width="25"
@@ -197,6 +206,10 @@ export default function RootLayout({
                 />
               </svg>
             </div>
+            <AddTaskModal 
+              isOpen={isAddTaskModalOpen}
+              onClose={() => setIsAddTaskModalOpen(false)}
+            />
           </div>
         </div>
       </div>

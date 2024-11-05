@@ -1,250 +1,123 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client"
 
-const SidebarProfile = () => {
+import React from "react";
+import { useRouter } from "next/navigation";
+
+const Dashboard = () => {
+  const router = useRouter();
+
+  const students = [
+    {
+      name: "Abmi Sukma",
+      university: "UIN SUSKA RIAU",
+      imgSrc: "/avatar.png",
+      notifications: 1,
+    },
+    {
+      name: "Muh. Zaki Erbai Syas",
+      university: "UIN SUSKA RIAU",
+      imgSrc: "/avatar.png",
+    },
+    {
+      name: "Ahmad Kurniawan",
+      university: "UIN SUSKA RIAU",
+      imgSrc: "/avatar.png",
+    },
+    {
+      name: "Nurika Dwi Wahyuni",
+      university: "UIN SUSKA RIAU",
+      imgSrc: "/avatar.png",
+      notifications: 7,
+    },
+    {
+      name: "Farras Lathief",
+      university: "UIN SUSKA RIAU",
+      imgSrc: "/avatar.png",
+    },
+    { name: "Orang Luar", university: "UIN SUSKA RIAU", imgSrc: "/avatar.png" },
+  ];
+
+  const handleCardClick = (name: string) => {
+    // Convert the name to a URL-friendly string by replacing spaces with dashes
+    const formattedName = name.toLowerCase().replace(/ /g, "-");
+    router.push(`/dosen-pembimbing/mahasiswa/${formattedName}`);
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen">
-      {/* Sidebar */}
-      <div className="flex lg:flex-col gap-5 w-full lg:w-[92px] h-auto lg:h-[90vh] lg:ml-[50px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
-        <div className="nav lg:mt-[215px] flex-1">
-          <div className="menu">
-            <ul className="flex lg:flex-col gap-5">
-              <li className="relative group">
-                <Link
-                  href="/mahasiswa/dashboard"
-                  className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
-                >
-                  <svg
-                    width="55"
-                    height="55"
-                    viewBox="0 0 55 55"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0_82_109)">
-                      <path
-                        d="M27.5 13.0396L38.9584 23.3521V41.25H34.375V27.5H20.625V41.25H16.0417V23.3521L27.5 13.0396ZM27.5 6.875L4.58337 27.5H11.4584V45.8333H25.2084V32.0833H29.7917V45.8333H43.5417V27.5H50.4167L27.5 6.875Z"
-                        fill="#323232"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_82_109">
-                        <rect width="55" height="55" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
-                    Dashboard
-                  </span>
-                </Link>
-              </li>
-              <li className="relative group">
-                <Link
-                  href="/mahasiswa/bimbingan"
-                  className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
-                >
-                  <svg
-                    width="55"
-                    height="55"
-                    viewBox="0 0 55 55"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0_82_110)">
-                      <path
-                        d="M43.5417 6.87508H41.25V2.29175H36.6667V6.87508H18.3333V2.29175H13.75V6.87508H11.4583C8.91458 6.87508 6.89792 8.93758 6.89792 11.4584L6.875 43.5417C6.875 46.0626 8.91458 48.1251 11.4583 48.1251H43.5417C46.0625 48.1251 48.125 46.0626 48.125 43.5417V11.4584C48.125 8.93758 46.0625 6.87508 43.5417 6.87508ZM43.5417 43.5417H11.4583V20.6251H43.5417V43.5417ZM43.5417 16.0417H11.4583V11.4584H43.5417V16.0417ZM38.9583 27.5001H27.5V38.9584H38.9583V27.5001Z"
-                        fill="#323232"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_82_110">
-                        <rect width="55" height="55" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
-                    Bimbingan
-                  </span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="menu">
-          <ul>
-            <li className="relative group">
-              <Link
-                href="/"
-                className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
-              >
-                <svg
-                  width="55"
-                  height="55"
-                  viewBox="0 0 30 44"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clipPath="url(#clip0_82_111)">
-                    <path
-                      d="M21.125 12.8333L23.4 15.4L19.175 20.1667H35.75V23.8333H19.175L23.4 28.6L21.125 31.1667L13 22L21.125 12.8333ZM6.5 34.8333H19.5V38.5H6.5C4.7125 38.5 3.25 36.85 3.25 34.8333V9.16667C3.25 7.15 4.7125 5.5 6.5 5.5H19.5V9.16667H6.5V34.8333Z"
-                      fill="#323232"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_82_111">
-                      <rect
-                        width="39"
-                        height="44"
-                        fill="white"
-                        transform="matrix(-1 0 0 1 39 0)"
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
-
-                <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible">
-                  Logout
-                </span>
-              </Link>
-            </li>
-          </ul>
-        </div>
+    <div className="flex flex-col items-center justify-start min-h-screen w-screen p-8">
+      <div className="w-full max-w-7xl mb-10">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p className="text-[#C5C5C5]">Friday, 20 Oct 2024</p>
       </div>
 
-      <div className="flex-1 px-8 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-gray-500">Friday, 20 Oct 2024</p>
-        </div>
-        <div className="bg-blue-100 p-6 rounded-md mb-6">
-          <h2 className="text-xl font-semibold">
-            Hi, <strong>Abmi Sukma</strong>
+      <div className="w-full max-w-7xl bg-[#D9F9FF] p-8 rounded-[20px] h-[150px] mb-10">
+        <h2 className="text-xl font-semibold">
+          Hi, <strong>Muhammad Irsyad</strong>
+        </h2>
+        <p className="text-[#C5C5C5]">
+          Fill today with something productive, blablabla
+        </p>
+      </div>
+
+      <div className="w-full max-w-7xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold">
+            Daftar Nama Bimbingan Kerja Praktik
           </h2>
-          <p>Fill today with something productive, blablabla</p>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-blue-100 p-4 rounded-md shadow">
-            <h3 className="text-lg font-semibold">Hari Kerja Praktik</h3>
-            <p>Ayo semangat !!</p>
-            <p className="text-4xl font-bold">Ke-1</p>
-          </div>
-          <div className="bg-blue-100 p-4 rounded-md shadow">
-            <h3 className="text-lg font-semibold flex items-center">
-              Feedback <span className="ml-2 text-gray-500">&#128276;</span>
-            </h3>
-            <p>Ada komentar nih buat kamu...</p>
-            <div className="flex mt-2">
-              {/* Pastikan Anda memiliki gambar user di public folder */}
-              <img
-                src="../../avatar.png"
-                alt="User 1"
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-              <img
-                src="../../avatar.png"
-                alt="User 2"
-                width={24}
-                height={24}
-                className="rounded-full -ml-2"
-              />
-              <img
-                src="../../avatar.png"
-                alt="User 2"
-                width={24}
-                height={24}
-                className="rounded-full -ml-2"
-              />
-              <span className="ml-2">+</span>
-            </div>
-          </div>
-          <div className="bg-blue-100 p-4 rounded-md shadow">
-            <h3 className="text-lg font-semibold flex items-center">
-              Lainnya <span className="ml-2 text-gray-500">&#128172;</span>
-            </h3>
-            <p>Apakah Kamu butuh bantuan?</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Section */}
-      <div className="w-full lg:w-[300px] h-auto lg:h-screen p-5 bg-[#F6F6F6] text-center mt-5 lg:mt-0">
-        <div className="flex flex-col items-center relative">
-          <h3 className="text-lg text-left w-full">
-            <b>Profile</b>
-          </h3>
-          <br />
-          <div className="relative w-[150px] h-[150px] mb-5">
-            <Image
-              src="/avatar.png"
-              alt="Profile Picture"
-              className="absolute top-0 left-0 w-[150px] h-[150px] rounded-full object-cover"
-              width={150}
-              height={150}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Cari disini"
+              className="px-4 py-2 pl-10 text-gray-700 bg-[#D9D9D9] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] animate-spin"></div>
-          </div>
-          <h3 className="font-bold text-lg">Abmi Sukma</h3>
-          <p className="text-[#C5C5C5] text-sm">Mahasiswa</p>
-          <p className="text-[#C5C5C5] text-sm">PT. Pertamina Kota Pekanbaru</p>
-        </div>
-
-        {/* Supervisor Section */}
-        <div className="text-left">
-          <h3 className="text-lg mt-5">
-            <b>Supervisor</b>
-          </h3>
-          <div className="flex items-center bg-[#FFBF5F] rounded-md p-3 mb-2">
-            <Image
-              src="/avatar.png"
-              alt="Supervisor 1"
-              className="w-[50px] h-[50px] rounded-full mr-2"
-              width={50}
-              height={50}
-            />
-            <div className="supervisor-info">
-              <h4 className="font-bold text-sm">Pizaini</h4>
-              <p className="text-xs text-[#C5C5C5]">Dosen Pembimbing</p>
-            </div>
-          </div>
-          <div className="flex items-center bg-[#FFBF5F] rounded-md p-3 mb-2">
-            <Image
-              src="/avatar.png"
-              alt="Supervisor 2"
-              className="w-[50px] h-[50px] rounded-full mr-2"
-              width={50}
-              height={50}
-            />
-            <div className="supervisor-info">
-              <h4 className="font-bold text-sm">Yelfi Fitriani</h4>
-              <p className="text-xs text-[#C5C5C5]">Pembimbing Instansi</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Report Button */}
-        <div className="report-section mt-10 mb-5 text-left">
-          <h3 className="text-lg">
-            <b>Buat Laporan</b>
-          </h3>
-          <div className="bg-[#2C707B] text-white flex flex-col rounded-md p-6">
-            <p>Tambah laporan harian mu sekarang</p>
             <svg
-              width="25"
-              height="25"
-              viewBox="0 0 25 25"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="mt-3"
             >
-              <rect width="25" height="25" rx="5" fill="#FFBF5F" />
-              <path
-                d="M17 13.7143H12.7143V18H11.2857V13.7143H7V12.2857H11.2857V8H12.7143V12.2857H17V13.7143Z"
-                fill="#323232"
-              />
+              <g clipPath="url(#clip0_154_145)">
+                <path
+                  d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"
+                  fill="#323232"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_154_145">
+                  <rect width="24" height="24" fill="white" />
+                </clipPath>
+              </defs>
             </svg>
+          </div>
+        </div>
+
+        <div className="h-[calc(100vh-450px)] overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {students.map((student) => (
+              <div
+                key={student.name}
+                onClick={() => handleCardClick(student.name)}
+                className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer"
+              >
+                <img
+                  src={student.imgSrc}
+                  alt={student.name}
+                  className="w-20 h-20 rounded-full mr-6"
+                />
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-1">{student.name}</h3>
+                  <p className="text-gray-600 mb-1">Mahasiswa</p>
+                  <p className="text-gray-600">{student.university}</p>
+                </div>
+                {student.notifications && (
+                  <div className="absolute right-6 flex items-center justify-center w-8 h-8 text-white bg-red-600 rounded-full font-bold">
+                    {student.notifications}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -252,4 +125,4 @@ const SidebarProfile = () => {
   );
 };
 
-export default SidebarProfile;
+export default Dashboard;
