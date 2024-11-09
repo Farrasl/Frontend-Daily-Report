@@ -1,10 +1,11 @@
 "use client"
 
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const students = [
     {
@@ -22,7 +23,7 @@ const Dashboard = () => {
       name: "Ahmad Kurniawan",
       university: "UIN SUSKA RIAU",
       imgSrc: "/avatar.png",
-    },
+    },  
     {
       name: "Nurika Dwi Wahyuni",
       university: "UIN SUSKA RIAU",
@@ -34,13 +35,32 @@ const Dashboard = () => {
       university: "UIN SUSKA RIAU",
       imgSrc: "/avatar.png",
     },
-    { name: "Orang Luar", university: "UIN SUSKA RIAU", imgSrc: "/avatar.png" },
+    { 
+      name: "Orang Luar", 
+      university: "UIN SUSKA RIAU", 
+      imgSrc: "/avatar.png" 
+    },
   ];
 
+  // Filter students based on search query
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
+      const searchTerm = searchQuery.toLowerCase();
+      return (
+        student.name.toLowerCase().includes(searchTerm) ||
+        student.university.toLowerCase().includes(searchTerm)
+      );
+    });
+  }, [searchQuery]);
+
   const handleCardClick = (name: string) => {
-    // Convert the name to a URL-friendly string by replacing spaces with dashes
     const formattedName = name.toLowerCase().replace(/ /g, "-");
     router.push(`/dosen-pembimbing/mahasiswa/${formattedName}`);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   return (
@@ -68,6 +88,8 @@ const Dashboard = () => {
             <input
               type="text"
               placeholder="Cari disini"
+              value={searchQuery}
+              onChange={handleSearchChange}
               className="px-4 py-2 pl-10 text-gray-700 bg-[#D9D9D9] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <svg
@@ -95,29 +117,35 @@ const Dashboard = () => {
 
         <div className="h-[calc(100vh-450px)] overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {students.map((student) => (
-              <div
-                key={student.name}
-                onClick={() => handleCardClick(student.name)}
-                className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer"
-              >
-                <img
-                  src={student.imgSrc}
-                  alt={student.name}
-                  className="w-20 h-20 rounded-full mr-6"
-                />
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-1">{student.name}</h3>
-                  <p className="text-gray-600 mb-1">Mahasiswa</p>
-                  <p className="text-gray-600">{student.university}</p>
-                </div>
-                {student.notifications && (
-                  <div className="absolute right-6 flex items-center justify-center w-8 h-8 text-white bg-red-600 rounded-full font-bold">
-                    {student.notifications}
+            {filteredStudents.length > 0 ? (
+              filteredStudents.map((student) => (
+                <div
+                  key={student.name}
+                  onClick={() => handleCardClick(student.name)}
+                  className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer hover:bg-[#C5F2FF] transition-colors"
+                >
+                  <img
+                    src={student.imgSrc}
+                    alt={student.name}
+                    className="w-20 h-20 rounded-full mr-6"
+                  />
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold mb-1">{student.name}</h3>
+                    <p className="text-gray-600 mb-1">Mahasiswa</p>
+                    <p className="text-gray-600">{student.university}</p>
                   </div>
-                )}
+                  {student.notifications && (
+                    <div className="absolute right-6 flex items-center justify-center w-8 h-8 text-white bg-red-600 rounded-full font-bold">
+                      {student.notifications}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 text-center py-8 text-gray-500">
+                Tidak ada mahasiswa yang ditemukan
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -125,4 +153,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;

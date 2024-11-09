@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import AddTaskModal from './components/addtaskmodal';
+import AddTaskModal from "@/src/app/mahasiswa/components/addtaskmodal";
 
 export default function RootLayout({
   children,
@@ -17,7 +17,7 @@ export default function RootLayout({
       <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen">
         {/* Sidebar */}
         <div className="flex lg:flex-col gap-5 w-full lg:w-[92px] h-auto lg:h-[90vh] lg:ml-[50px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
-          <div className="nav lg:mt-[215px] flex-1">
+          <div className="nav lg:mt-[175px] flex-1">
             <div className="menu">
               <ul className="flex lg:flex-col gap-5">
                 <li className="relative group">
@@ -76,6 +76,29 @@ export default function RootLayout({
                     </svg>
                     <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
                       Daily Report
+                    </span>
+                  </Link>
+                </li>
+                <li className="relative group">
+                  <Link
+                    href="/mahasiswa/bimbingan"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
+                  >
+                    <svg
+                      width="52"
+                      height="53"
+                      viewBox="0 0 52 53"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M26 52.5C28.8134 52.5 31.1153 50.1 31.1153 47.1667H20.8847C20.8847 50.1 23.1866 52.5 26 52.5ZM41.346 36.5V23.1667C41.346 14.98 37.177 8.12667 29.8365 6.31333V4.5C29.8365 2.28667 28.1229 0.5 26 0.5C23.8771 0.5 22.1635 2.28667 22.1635 4.5V6.31333C14.8485 8.12667 10.654 14.9533 10.654 23.1667V36.5L5.53862 41.8333V44.5H46.4614V41.8333L41.346 36.5ZM36.2307 39.1667H15.7693V23.1667C15.7693 16.5533 19.6314 11.1667 26 11.1667C32.3686 11.1667 36.2307 16.5533 36.2307 23.1667V39.1667ZM14.6951 4.71333L11.0376 0.9C4.8992 5.78 0.858074 13.3 0.5 21.8333H5.61535C5.999 14.7667 9.47743 8.58 14.6951 4.71333ZM46.3847 21.8333H51.5C51.1163 13.3 47.0752 5.78 40.9624 0.9L37.3305 4.71333C42.497 8.58 46.001 14.7667 46.3847 21.8333Z"
+                        fill="#323232"
+                      />
+                    </svg>
+
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                      Bimbingan
                     </span>
                   </Link>
                 </li>
@@ -186,7 +209,7 @@ export default function RootLayout({
             <h3 className="text-lg">
               <b>Buat Laporan</b>
             </h3>
-            <div 
+            <div
               className="bg-[#2C707B] text-white flex flex-col rounded-md p-6 cursor-pointer"
               onClick={() => setIsAddTaskModalOpen(true)}
             >
@@ -206,7 +229,7 @@ export default function RootLayout({
                 />
               </svg>
             </div>
-            <AddTaskModal 
+            <AddTaskModal
               isOpen={isAddTaskModalOpen}
               onClose={() => setIsAddTaskModalOpen(false)}
             />

@@ -1,33 +1,33 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ReviewModal from "@/src/app/mahasiswa/components/reviewmodal";
 
 const DailyReport = () => {
   const router = useRouter();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(null);
+
   const tasks = [
     { task: 'Design UI "Daily Report"', date: 'Jumat, 20 Oktober', status: 'Not yet' },
     { task: 'Pemasangan router baru di ruangan Boss', date: 'Kamis, 19 Oktober', status: 'Done' },
     { task: '#3 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#3 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#3 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#3 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
-    { task: '#2 Perancangan server baru di ruang karyawan', date: 'Rabu, 18 Oktober', status: 'Done' },
   ];
 
   const handleRowClick = (taskIndex: number) => {
-    router.push(`/mahasiswa/daily-report/review/${taskIndex}`);
+    setSelectedTaskIndex(taskIndex);
+    setIsReviewModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsReviewModalOpen(false);
+    setSelectedTaskIndex(null);
   };
 
   return (
     <div className="flex-1 h-screen overflow-y-auto bg-white">
+      {/* Daily Report content */}
       <div className="px-8">
         <div className="pt-10 mb-8">
           <h2 className="text-xl font-bold">Daily Report</h2>
@@ -110,7 +110,14 @@ const DailyReport = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={handleCloseModal}
+        taskIndex={selectedTaskIndex}
+        tasks={tasks}
+      />    </div>
   );
 };
 
