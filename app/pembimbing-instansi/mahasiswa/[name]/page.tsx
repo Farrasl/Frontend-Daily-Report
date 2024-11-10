@@ -169,7 +169,7 @@ const DailyReportPage = ({ params }: { params: { name: string } }) => {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <g clip-path="url(#clip0_195_2079)">
+                          <g clipPath="url(#clip0_195_2079)">
                             <path
                               d="M14.25 9.75H9.75V14.25H8.25V9.75H3.75V8.25H8.25V3.75H9.75V8.25H14.25V9.75Z"
                               fill="white"

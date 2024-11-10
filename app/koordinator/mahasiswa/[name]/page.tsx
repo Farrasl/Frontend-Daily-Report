@@ -72,7 +72,7 @@ const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
       {/* Navigation Cards */}
       <div className="grid md:grid-cols-2 gap-6">
         <Link
-          href={`/koordinator-kp/mahasiswa/${name}/daily-report`}
+          href={`/koordinator/mahasiswa/${name}/daily-report`}
           className="block"
         >
           <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors">
@@ -92,7 +92,7 @@ const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
         </Link>
 
         <Link
-          href={`/koordinator-kp/mahasiswa/${name}/bimbingan-kp`}
+          href={`/koordinator/mahasiswa/${name}/bimbingan-kp`}
           className="block"
         >
           <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors">

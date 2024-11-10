@@ -10,7 +10,7 @@ export default function RootLayout({
     <main>
       <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen">
         {/* Sidebar */}
-        <div className="flex lg:flex-col gap-5 w-full lg:w-[92px] h-auto lg:h-[90vh] lg:ml-[50px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
+        <div className="flex lg:flex-col gap-5 w-full lg:w-[80px] h-auto lg:h-[96vh] lg:ml-[22px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
           <div className="nav lg:mt-[250px] flex-1">
             <div className="menu">
               <ul className="flex lg:flex-col gap-5">
@@ -39,8 +39,38 @@ export default function RootLayout({
                       </defs>
                     </svg>
 
-                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                       Dashboard
+                    </span>
+                  </Link>
+                </li>
+                <li className="relative group">
+                  <Link
+                    href="/pembimbing-instansi/daftar-mahasiswa"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
+                  >
+                    <svg
+                      width="55"
+                      height="55"
+                      viewBox="0 0 55 55"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clipPath="url(#clip0_514_796)">
+                        <path
+                          d="M43.5417 6.87508H41.25V2.29175H36.6667V6.87508H18.3333V2.29175H13.75V6.87508H11.4583C8.91458 6.87508 6.89792 8.93758 6.89792 11.4584L6.875 43.5417C6.875 46.0626 8.91458 48.1251 11.4583 48.1251H43.5417C46.0625 48.1251 48.125 46.0626 48.125 43.5417V11.4584C48.125 8.93758 46.0625 6.87508 43.5417 6.87508ZM43.5417 43.5417H11.4583V20.6251H43.5417V43.5417ZM43.5417 16.0417H11.4583V11.4584H43.5417V16.0417ZM38.9583 27.5001H27.5V38.9584H38.9583V27.5001Z"
+                          fill="#323232"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_514_796">
+                          <rect width="55" height="55" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
+                      Mahasiswa
                     </span>
                   </Link>
                 </li>
@@ -79,7 +109,7 @@ export default function RootLayout({
                     </defs>
                   </svg>
 
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                     Logout
                   </span>
                 </Link>
@@ -109,7 +139,6 @@ export default function RootLayout({
             <h3 className="font-bold text-lg">Sarinah, M.Pd</h3>
             <br />
             <p className="text-[#C5C5C5] text-sm">Pembimbing Instansi</p>
-            <br />
             <p className="text-[#C5C5C5] text-sm">
               PT. Pertamina Kota Pekanbaru
             </p>

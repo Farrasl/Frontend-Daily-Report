@@ -39,8 +39,38 @@ export default function RootLayout({
                       </defs>
                     </svg>
 
-                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                       Dashboard
+                    </span>
+                  </Link>
+                </li>
+                <li className="relative group">
+                  <Link
+                    href="/dosen-pembimbing/daftar-mahasiswa"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
+                  >
+                    <svg
+                      width="55"
+                      height="55"
+                      viewBox="0 0 55 55"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clipPath="url(#clip0_514_796)">
+                        <path
+                          d="M43.5417 6.87508H41.25V2.29175H36.6667V6.87508H18.3333V2.29175H13.75V6.87508H11.4583C8.91458 6.87508 6.89792 8.93758 6.89792 11.4584L6.875 43.5417C6.875 46.0626 8.91458 48.1251 11.4583 48.1251H43.5417C46.0625 48.1251 48.125 46.0626 48.125 43.5417V11.4584C48.125 8.93758 46.0625 6.87508 43.5417 6.87508ZM43.5417 43.5417H11.4583V20.6251H43.5417V43.5417ZM43.5417 16.0417H11.4583V11.4584H43.5417V16.0417ZM38.9583 27.5001H27.5V38.9584H38.9583V27.5001Z"
+                          fill="#323232"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_514_796">
+                          <rect width="55" height="55" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
+                      Mahasiswa
                     </span>
                   </Link>
                 </li>
@@ -79,8 +109,7 @@ export default function RootLayout({
                     </defs>
                   </svg>
 
-
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px]">
+                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                     Logout
                   </span>
                 </Link>
@@ -101,7 +130,7 @@ export default function RootLayout({
               <Image
                 src="/avatar.png"
                 alt="Profile Picture"
-                className="absolute top-0 left-0 w-[150px] h-[150px] rounded-full object-cover"
+                className="absolute top-0 left-0 rounded-full object-cover"
                 width={150}
                 height={150}
               />

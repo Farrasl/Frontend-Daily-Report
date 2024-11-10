@@ -15,7 +15,7 @@ const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
   return (
     <div className="max-w-4xl mx-auto p-8">
       {/* Title */}
-      <h1 className="text-center text-xl font-bold mb-8 -mt- px-4">
+      <h1 className="text-center text-xl font-bold mb-8 px-4">
         "PERANCANGAN SISTEM INFORMASI PEMANTAUAN PERKEMBANGAN STATUS PERBAIKAN
         KOMPUTER BERBASIS WEB DI PT. PERTAMINA"
       </h1>

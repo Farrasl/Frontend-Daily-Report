@@ -165,7 +165,7 @@ export default function RootLayout({
               <Image
                 src="/avatar.png"
                 alt="Profile Picture"
-                className="absolute top-0 left-0 w-[150px] h-[150px] rounded-full object-cover"
+                className="absolute top-0 left-0 rounded-full object-cover"
                 width={150}
                 height={150}
               />
@@ -187,7 +187,7 @@ export default function RootLayout({
               <Image
                 src="/avatar.png"
                 alt="Supervisor 1"
-                className="w-[50px] h-[50px] rounded-full mr-2"
+                className="rounded-full mr-2"
                 width={50}
                 height={50}
               />
@@ -200,7 +200,7 @@ export default function RootLayout({
               <Image
                 src="/avatar.png"
                 alt="Supervisor 2"
-                className="w-[50px] h-[50px] rounded-full mr-2"
+                className="rounded-full mr-2"
                 width={50}
                 height={50}
               />
