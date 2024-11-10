@@ -113,7 +113,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="h-[calc(100vh-450px)]">
+        <div className="h-[calc(122vh-300px)] overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {filteredStudents.length > 0 ? (
               filteredStudents.map((student) => (

@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import BimbinganKPModal from "../../../../../components/dosen-pembimbing/BimbinganKPModal";
+import BimbinganModal from "../../../../../components/mahasiswa/BimbinganModal";
+
 
 interface ProfileData {
   nama: string;
@@ -11,41 +13,66 @@ interface ProfileData {
   email: string;
 }
 
-const BimbinganKP = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [date, setDate] = useState("");
-  const [evaluation, setEvaluation] = useState("");
+interface BimbinganHistoryItem {
+  tanggal: string;
+  status: string;
+  aksi: string;
+  evaluasi: string;
+  nim: string;
+  nama: string;
+  dosenPembimbing: string;
+  pembimbingInstansi: string;
+  statusPenerimaan: string;
+}
 
-  const [profileData] = useState<ProfileData>({
-    nama: "Abmi Sukma",
-    dosenPembimbing: "Dr. Ahmad",
-    nim: "123456789",
-    pembimbingInstansi: "Ir. Budi",
-    email: "abmi.sukma@email.com",
-  });
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+const BimbinganKP = ({ params }: { params: { name: string } }) => {
+  const { name } = params;
+
+  const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(null);
+
+  const profileData = {
+    nim: "12250120341",
+    nama: name,
+    dosenPembimbing: "Muhammad Irsyad, S.T., M.T.",
+    pembimbingInstansi: "Sarinah, M.Pd.",
+    email: "abmisukma.e@gmail.com",
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log({ date, evaluation });
-    handleCloseModal();
-  };
-
-  const BimbinganHistory = [
-    { tanggal: 'Sabtu, 2 Nov 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Senin, 16 Okt 2024', status: 'pending', aksi: 'Lihat' },
-    { tanggal: 'Selasa, 6 Dec 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Rabu, 7 Jan 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Kamis, 8 Feb 2024', status: 'done', aksi: 'Lihat' },
-    
+  
+  const BimbinganHistory: BimbinganHistoryItem[] = [
+    {
+      tanggal: "Sabtu, 29 Oktober 2024",
+      status: "done",
+      aksi: "Lihat",
+      evaluasi: "Kerja sama tim baik.",
+      nim: profileData.nim,
+      nama: profileData.nama,
+      dosenPembimbing: profileData.dosenPembimbing,
+      pembimbingInstansi: profileData.pembimbingInstansi,
+      statusPenerimaan: "Diterima",
+    },
+    {
+      tanggal: "Senin, 1 November 2024",
+      status: "pending",
+      aksi: "Lihat",
+      evaluasi: "Perlu peningkatan pada laporan.",
+      nim: profileData.nim,
+      nama: profileData.nama,
+      dosenPembimbing: profileData.dosenPembimbing,
+      pembimbingInstansi: profileData.pembimbingInstansi,
+      statusPenerimaan: "Menunggu",
+    },
   ];
+
+  const handleOpenBimbinganModal = (data: BimbinganHistoryItem) => {
+    setSelectedData(data);
+    setIsBimbinganModalOpen(true);
+  };
+
+  const handleCloseBimbinganModal = () => {
+    setIsBimbinganModalOpen(false);
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -135,8 +162,8 @@ const BimbinganKP = () => {
                     <td className="py-3 px-4 text-right">
                       <button
                         className="text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none"
-                        onClick={() => console.log('View clicked')}
-                      >
+                        onClick={() => handleOpenBimbinganModal(item)}
+                        >
                         {item.aksi}
                       </button>
                     </td>
@@ -147,15 +174,12 @@ const BimbinganKP = () => {
           </div>
         </div>
 
-      {/* BimbinganKPModal Component */}
-      {isModalOpen && (
-        <BimbinganKPModal
-          date={date}
-          evaluation={evaluation}
-          setDate={setDate}
-          setEvaluation={setEvaluation}
-          handleSubmit={handleSubmit}
-          handleClose={handleCloseModal}
+      {/* Modals */}
+      {isBimbinganModalOpen && selectedData && (
+        <BimbinganModal
+          isOpen={isBimbinganModalOpen}
+          onClose={handleCloseBimbinganModal}
+          data={selectedData}
         />
       )}
     </div>

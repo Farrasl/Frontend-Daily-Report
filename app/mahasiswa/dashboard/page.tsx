@@ -1,12 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import FAQModal from "../../../components/mahasiswa/FAQsModal"; 
 
 const DashboardMahasiswa = () => {
   const totalDays = 30;
   const currentDay = 1;
   const progressPercentage = (currentDay / totalDays) * 100;
   const [currentDate, setCurrentDate] = useState("");
+  const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
+
+  // Sample FAQ data
+  const faqData = [
+    {
+      question: "Cara mengisi Daily Report",
+      answer: "Halaman dashboard, pilih Tambah Laporan. Isi detail agenda seperti waktu, dokumentasi, deskripsi singkat, dan hasil yang dicapai. Pastikan deskripsi informatif tetapi singkat. Setelah selesai, klik Simpan untuk menyimpan."
+    },
+    {
+      question: "Kapan harus mengumpulkan Daily Report?",
+      answer: "Daily Report harus dikumpulkan setiap hari kerja sebelum pukul 17:00 WIB."
+    },
+    {
+      question: "Bagaimana jika saya lupa mengisi Daily Report?",
+      answer: "Jika Anda lupa mengisi Daily Report, segera hubungi pembimbing Anda dan isi laporan yang terlewat dengan mencantumkan alasan keterlambatan."
+    },
+    {
+      question: "Apa yang harus dilaporkan dalam Daily Report?",
+      answer: "Daily Report harus mencakup:\n- Aktivitas yang dilakukan\n- Progress pekerjaan\n- Kendala yang dihadapi\n- Solusi yang diterapkan\n- Rencana untuk hari berikutnya"
+    },
+  ];
 
   useEffect(() => {
     const today = new Date();
@@ -52,7 +74,10 @@ const DashboardMahasiswa = () => {
               Ke-1
             </p>
           </div>
-          <div className="bg-[#D9F9FF] p-6 rounded-[20px] shadow">
+          <div 
+            className="bg-[#D9F9FF] p-6 rounded-[20px] shadow cursor-pointer hover:bg-[#C5EEFF] transition-colors"
+            onClick={() => setIsFAQModalOpen(true)}
+          >
             <h3 className="text-lg font-semibold flex justify-between items-center">
               FAQs
               <svg
@@ -86,7 +111,7 @@ const DashboardMahasiswa = () => {
               <div
                 className="bg-[#FFBF5F] h-3 md:h-4 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercentage}%` }}
-              />
+                />
             </div>
           </div>
           {/* Timeline */}
@@ -117,6 +142,13 @@ const DashboardMahasiswa = () => {
           </div>
         </div>
       </div>
+
+      {/* FAQ Modal */}
+      <FAQModal
+        isOpen={isFAQModalOpen}
+        onClose={() => setIsFAQModalOpen(false)}
+        faqs={faqData}
+      />
     </div>
   );
 };

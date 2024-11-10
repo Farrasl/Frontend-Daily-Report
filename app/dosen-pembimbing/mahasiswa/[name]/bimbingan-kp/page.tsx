@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import BimbinganKPModal from "../../../../../components/dosen-pembimbing/BimbinganKPModal";
+import BimbinganModal from "../../../../../components/mahasiswa/BimbinganModal";
 
 interface ProfileData {
   nama: string;
@@ -11,41 +12,84 @@ interface ProfileData {
   email: string;
 }
 
-const BimbinganKP = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface BimbinganHistoryItem {
+  tanggal: string;
+  status: string;
+  aksi: string;
+  evaluasi: string;
+  nim: string;
+  nama: string;
+  dosenPembimbing: string;
+  pembimbingInstansi: string;
+  statusPenerimaan: string;
+}
+
+const BimbinganKP = ({ params }: { params: { name: string } }) => {
+  const { name } = params;
+
+  const [isBimbinganKPModalOpen, setIsBimbinganKPModalOpen] = useState(false);
+  const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);
   const [date, setDate] = useState("");
   const [evaluation, setEvaluation] = useState("");
+  const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(null);
 
-  const [profileData] = useState<ProfileData>({
-    nama: "Abmi Sukma",
-    dosenPembimbing: "Dr. Ahmad",
-    nim: "123456789",
-    pembimbingInstansi: "Ir. Budi",
-    email: "abmi.sukma@email.com",
-  });
+  const profileData = {
+    nim: "12250120341",
+    nama: name,
+    dosenPembimbing: "Muhammad Irsyad, S.T., M.T.",
+    pembimbingInstansi: "Sarinah, M.Pd.",
+    email: "abmisukma.e@gmail.com",
+  };
+  
+  const BimbinganHistory: BimbinganHistoryItem[] = [
+    {
+      tanggal: "Sabtu, 29 Oktober 2024",
+      status: "done",
+      aksi: "Lihat",
+      evaluasi: "Kerja sama tim baik.",
+      nim: profileData.nim,
+      nama: profileData.nama,
+      dosenPembimbing: profileData.dosenPembimbing,
+      pembimbingInstansi: profileData.pembimbingInstansi,
+      statusPenerimaan: "Diterima",
+    },
+    {
+      tanggal: "Senin, 1 November 2024",
+      status: "pending",
+      aksi: "Lihat",
+      evaluasi: "Perlu peningkatan pada laporan.",
+      nim: profileData.nim,
+      nama: profileData.nama,
+      dosenPembimbing: profileData.dosenPembimbing,
+      pembimbingInstansi: profileData.pembimbingInstansi,
+      statusPenerimaan: "Menunggu",
+    },
+    // Add more items as needed, using profileData for consistency
+  ];
+  
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenBimbinganKPModal = () => {
+    setIsBimbinganKPModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseBimbinganKPModal = () => {
+    setIsBimbinganKPModalOpen(false);
+  };
+
+  const handleOpenBimbinganModal = (data: BimbinganHistoryItem) => {
+    setSelectedData(data);
+    setIsBimbinganModalOpen(true);
+  };
+
+  const handleCloseBimbinganModal = () => {
+    setIsBimbinganModalOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({ date, evaluation });
-    handleCloseModal();
+    handleCloseBimbinganKPModal();
   };
-
-  const BimbinganHistory = [
-    { tanggal: 'Sabtu, 2 Nov 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Senin, 16 Okt 2024', status: 'pending', aksi: 'Lihat' },
-    { tanggal: 'Selasa, 6 Dec 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Rabu, 7 Jan 2024', status: 'done', aksi: 'Lihat' },
-    { tanggal: 'Kamis, 8 Feb 2024', status: 'done', aksi: 'Lihat' },
-    
-  ];
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -69,7 +113,6 @@ const BimbinganKP = () => {
 
           {/* Profile Details */}
           <div className="flex-1 space-y-4">
-            {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               <div>
                 <p className="text-gray-500">NAMA MAHASISWA</p>
@@ -80,8 +123,6 @@ const BimbinganKP = () => {
                 <p className="font-medium">{profileData.dosenPembimbing}</p>
               </div>
             </div>
-
-            {/* Supervisors Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               <div>
                 <p className="text-gray-500">NIM</p>
@@ -92,66 +133,70 @@ const BimbinganKP = () => {
                 <p className="font-medium">{profileData.pembimbingInstansi}</p>
               </div>
             </div>
-
-            {/* Email Info */}
             <div>
               <p className="text-gray-500">Email</p>
               <p className="font-medium">{profileData.email}</p>
             </div>
           </div>
         </div>
-        </div>
-      
-        {/* Riwayat Bimbingan Section */}
-        <div className="mt-6">
-          <h2 className="text-center text-xl font-bold mb-4">
-            Riwayat Bimbingan
-          </h2>
-          <div className="bg-[#D9F9FF] rounded-[20px] p-4  h-[200px] overflow-y-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left">
-                  <th className="py-2 px-4 text-[#323232]">Tanggal</th>
-                  <th className="py-2 px-4 text-[#323232] text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {BimbinganHistory.map((item, index) => (
-                  <tr key={index} className="border-t border-sky-100">
-                    <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        className="text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none"
-                        onClick={() => console.log('View clicked')}
-                      >
-                        {item.aksi}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-center mt-2">
-            <button
-              className="flex items-center bg-[#00796B] text-white px-6 py-3 rounded-full shadow-lg"
-              onClick={handleOpenModal}
-            >
-              <span className="mr-2">+</span>
-              Buat laporan bimbingan mahasiswa
-            </button>
-          </div>
-        </div>
+      </div>
 
-      {/* BimbinganKPModal Component */}
-      {isModalOpen && (
+      {/* Riwayat Bimbingan Section */}
+      <div className="mt-6">
+        <h2 className="text-center text-xl font-bold mb-4">Riwayat Bimbingan</h2>
+        <div className="bg-[#D9F9FF] rounded-[20px] p-4 h-[200px] overflow-y-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="text-left">
+                <th className="py-2 px-4 text-[#323232]">Tanggal</th>
+                <th className="py-2 px-4 text-[#323232] text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BimbinganHistory.map((item, index) => (
+                <tr key={index} className="border-t border-sky-100">
+                  <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      className="text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none"
+                      onClick={() => handleOpenBimbinganModal(item)}
+                    >
+                      {item.aksi}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-center mt-2">
+          <button
+            className="flex items-center bg-[#00796B] text-white px-6 py-3 rounded-full shadow-lg"
+            onClick={handleOpenBimbinganKPModal}
+          >
+            <span className="mr-2">+</span>
+            Buat laporan bimbingan mahasiswa
+          </button>
+        </div>
+      </div>
+
+      {/* Modals */}
+      {isBimbinganModalOpen && selectedData && (
+        <BimbinganModal
+          isOpen={isBimbinganModalOpen}
+          onClose={handleCloseBimbinganModal}
+          data={selectedData}
+        />
+      )}
+
+      {isBimbinganKPModalOpen && (
         <BimbinganKPModal
           date={date}
           evaluation={evaluation}
           setDate={setDate}
           setEvaluation={setEvaluation}
           handleSubmit={handleSubmit}
-          handleClose={handleCloseModal}
+          handleClose={handleCloseBimbinganKPModal}
         />
       )}
     </div>

@@ -1,14 +1,57 @@
 "use client";
 
+import React, { useState } from "react";
+import BimbinganModal from "../../../components/mahasiswa/BimbinganModal";
+
+// Define the type for each item in BimbinganHistory
+type BimbinganHistoryItem = {
+  tanggal: string;
+  status: string;
+  aksi: string;
+  evaluasi: string;
+  nim: string;
+  nama: string;
+  dosenPembimbing: string;
+  pembimbingInstansi: string;
+  statusPenerimaan: string;
+};
+
 const RiwayatBimbingan = () => {
-  const BimbinganHistory = [
-    { tanggal: "Sabtu, 29 Oktober 2024", status: "done", aksi: "Lihat" },
-    { tanggal: "Senin, 1 November 2024", status: "pending", aksi: "Lihat" },
-    { tanggal: "Kamis, 4 November 2024", status: "done", aksi: "Lihat" },
-    { tanggal: "Sabtu, 6 November 2024", status: "done", aksi: "Lihat" },
-    { tanggal: "Senin, 8 November 2024", status: "done", aksi: "Lihat" },
-    { tanggal: "Kamis, 11 November 2024", status: "done", aksi: "Lihat" },
+  // Update selectedData to use BimbinganHistoryItem | null
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(
+    null
+  );
+
+  const BimbinganHistory: BimbinganHistoryItem[] = [
+    {
+      tanggal: "Sabtu, 29 Oktober 2024",
+      status: "done",
+      aksi: "Lihat",
+      evaluasi: "Kerja sama tim baik.",
+      nim: "12250111",
+      nama: "Abmi Sukma",
+      dosenPembimbing: "Pizaini",
+      pembimbingInstansi: "Yelvi Fitriani",
+      statusPenerimaan: "Diterima",
+    },
+    {
+      tanggal: "Senin, 1 November 2024",
+      status: "pending",
+      aksi: "Lihat",
+      evaluasi: "Perlu peningkatan pada laporan.",
+      nim: "12250111",
+      nama: "Abmi Sukma",
+      dosenPembimbing: "Pizaini",
+      pembimbingInstansi: "Yelvi Fitriani",
+      statusPenerimaan: "Menunggu",
+    },
   ];
+
+  const handleViewClick = (data: BimbinganHistoryItem) => {
+    setSelectedData(data);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="flex-1 h-screen overflow-y-auto bg-white">
@@ -34,7 +77,7 @@ const RiwayatBimbingan = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           className="text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none"
-                          onClick={() => console.log("View clicked")}
+                          onClick={() => handleViewClick(item)}
                         >
                           {item.aksi}
                         </button>
@@ -49,6 +92,12 @@ const RiwayatBimbingan = () => {
           </table>
         </div>
       </div>
+
+      <BimbinganModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedData}
+      />
     </div>
   );
 };
