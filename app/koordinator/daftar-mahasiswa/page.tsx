@@ -1,30 +1,17 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 const Dashboard = () => {
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const today = new Date();
-    const options: any = {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-    setCurrentDate(today.toLocaleDateString("id-ID", options));
-  }, []);
 
   const students = [
     {
       name: "Abmi Sukma",
       university: "Teknik Informatika - UIN Suska Riau",
       imgSrc: "/avatar.png",
-      notifications: 1,
     },
     {
       name: "Muh. Zaki Erbai Syas",
@@ -40,7 +27,6 @@ const Dashboard = () => {
       name: "Nurika Dwi Wahyuni",
       university: "Teknik Informatika - UIN Suska Riau",
       imgSrc: "/avatar.png",
-      notifications: 7,
     },
     {
       name: "Farras Lathief",
@@ -147,11 +133,6 @@ const Dashboard = () => {
                     <p className="text-gray-600 mb-1">Mahasiswa</p>
                     <p className="text-gray-600">{student.university}</p>
                   </div>
-                  {student.notifications && (
-                    <div className="absolute right-6 flex items-center justify-center w-8 h-8 text-white bg-red-600 rounded-full font-bold">
-                      {student.notifications}
-                    </div>
-                  )}
                 </div>
               ))
             ) : (

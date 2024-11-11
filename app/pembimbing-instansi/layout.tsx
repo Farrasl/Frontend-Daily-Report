@@ -87,18 +87,18 @@ export default function RootLayout({
                   <svg
                     width="55"
                     height="55"
-                    viewBox="0 0 30 44"
+                    viewBox="0 0 39 44"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g clipPath="url(#clip0_82_111)">
+                    <g clipPath="url(#clip0_82_80)">
                       <path
                         d="M21.125 12.8333L23.4 15.4L19.175 20.1667H35.75V23.8333H19.175L23.4 28.6L21.125 31.1667L13 22L21.125 12.8333ZM6.5 34.8333H19.5V38.5H6.5C4.7125 38.5 3.25 36.85 3.25 34.8333V9.16667C3.25 7.15 4.7125 5.5 6.5 5.5H19.5V9.16667H6.5V34.8333Z"
                         fill="#323232"
                       />
                     </g>
                     <defs>
-                      <clipPath id="clip0_82_111">
+                      <clipPath id="clip0_82_80">
                         <rect
                           width="39"
                           height="44"

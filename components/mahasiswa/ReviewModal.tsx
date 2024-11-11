@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
+import AddAgendaModal from "../../components/mahasiswa/AddAgendaModal";
 
 interface Task {
   task: string;
@@ -21,6 +23,8 @@ const ReviewModal = ({
   taskIndex,
   tasks,
 }: ReviewModalProps) => {
+  const [showAddAgendaModal, setShowAddAgendaModal] = useState(false);
+
   if (!isOpen || taskIndex === null) return null;
 
   const task = tasks[taskIndex];
@@ -111,7 +115,7 @@ const ReviewModal = ({
                 <div>
                   <h3 className="text-sm text-gray-500 mb-2">DOCUMENTATION</h3>
                   <Image
-                    src="/avatar.png"
+                    src="/kerja.jpg"
                     alt="Documentation screenshot"
                     width={200}
                     height={200}
@@ -125,7 +129,10 @@ const ReviewModal = ({
             <div className="bg-[#9FD8E4] p-6 rounded-lg h-[225px] overflow-y-auto">
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-sm text-gray-500">DESKRIPSI AGENDA</h2>
-                <button className="p-1">
+                <button 
+                className="p-1"
+                onClick={() => setShowAddAgendaModal(true)}
+>
                   <svg
                     width="24"
                     height="24"
@@ -195,6 +202,11 @@ const ReviewModal = ({
           </div>
         </div>
       </div>
+            {/* AddAgendaModal */}
+            <AddAgendaModal
+        isOpen={showAddAgendaModal}
+        onClose={() => setShowAddAgendaModal(false)}
+      />
     </div>
   );
 };

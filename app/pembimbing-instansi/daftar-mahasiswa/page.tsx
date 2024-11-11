@@ -5,19 +5,7 @@ import { useEffect, useState, useMemo } from "react";
 
 const Dashboard = () => {
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const today = new Date();
-    const options: any = {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-    setCurrentDate(today.toLocaleDateString("id-ID", options));
-  }, []);
 
   const students = [
     {
