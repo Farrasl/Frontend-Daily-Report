@@ -1,11 +1,21 @@
 import Link from "next/link";
-import Image from "next/image";
 
 export default function RootLayout({
   children,
+  Name = "Sarinah, M.Pd",
 }: Readonly<{
   children: React.ReactNode;
+  Name: string;
 }>) {
+  const getInitials = (name: string) => {
+    const nameParts = name.split(" "); // Memisahkan nama berdasarkan spasi
+    const initials = nameParts
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase()) // Ambil huruf pertama dan ubah jadi kapital
+      .join(""); // Gabungkan inisial
+    return initials;
+  };
+
   return (
     <main>
       <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen">
@@ -38,7 +48,6 @@ export default function RootLayout({
                         </clipPath>
                       </defs>
                     </svg>
-
                     <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                       Dashboard
                     </span>
@@ -68,7 +77,6 @@ export default function RootLayout({
                         </clipPath>
                       </defs>
                     </svg>
-
                     <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                       Mahasiswa
                     </span>
@@ -108,7 +116,6 @@ export default function RootLayout({
                       </clipPath>
                     </defs>
                   </svg>
-
                   <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                     Logout
                   </span>
@@ -127,16 +134,12 @@ export default function RootLayout({
             </h3>
             <br />
             <div className="relative w-[150px] h-[150px] mb-5">
-              <Image
-                src="/avatar.png"
-                alt="Profile Picture"
-                className="absolute top-0 left-0 w-[150px] h-[150px] rounded-full object-cover"
-                width={150}
-                height={150}
-              />
-              <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] animate-spin"></div>
+              {/* Display Initials */}
+              <div className="flex items-center justify-center w-[150px] h-[150px] bg-[#9FD8E4] rounded-full text-white text-4xl font-semibold">
+                {getInitials(Name)}
+              </div>
             </div>
-            <h3 className="font-bold text-lg">Sarinah, M.Pd</h3>
+            <h3 className="font-bold text-lg">{Name}</h3>
             <br />
             <p className="text-[#C5C5C5] text-sm">Pembimbing Instansi</p>
             <p className="text-[#C5C5C5] text-sm">

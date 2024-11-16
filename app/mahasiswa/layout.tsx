@@ -1,15 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import AddTaskModal from "../../components/mahasiswa/AddTaskModal";
 
 export default function RootLayout({
   children,
+  Name = "Abmi Sukma",
+  NameDosenPembimbing = "Pizaini",
+  NamePembimbingInstansi = "Yelfi Fitriani"
 }: Readonly<{
   children: React.ReactNode;
+  Name: string;
+  NameDosenPembimbing: string;
+  NamePembimbingInstansi: string;
 }>) {
+
+  const getInitials = (name: string) => {
+    const nameParts = name.split(" "); // Memisahkan nama berdasarkan spasi
+    const initials = nameParts
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase()) // Ambil huruf pertama dan ubah jadi kapital
+      .join(""); // Gabungkan inisial
+    return initials;
+  };
+
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   return (
@@ -156,22 +171,18 @@ export default function RootLayout({
         {children}
         {/* Profile Section */}
         <div className="w-full lg:w-[300px] h-auto lg:h-screen p-5 bg-[#F6F6F6] text-center mt-5 lg:mt-0">
-          <div className="flex flex-col items-center relative">
+        <div className="flex flex-col items-center relative">
             <h3 className="text-lg text-left w-full">
               <b>Profile</b>
             </h3>
             <br />
             <div className="relative w-[150px] h-[150px] mb-5">
-              <Image
-                src="/avatar.png"
-                alt="Profile Picture"
-                className="absolute top-0 left-0 rounded-full object-cover"
-                width={150}
-                height={150}
-              />
-              <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] animate-spin"></div>
+              {/* Display Initials */}
+              <div className="flex items-center justify-center w-[150px] h-[150px] bg-[#9FD8E4] rounded-full text-white text-4xl font-semibold">
+                {getInitials(Name)}
+              </div>
             </div>
-            <h3 className="font-bold text-lg">Abmi Sukma</h3>
+            <h3 className="font-bold text-lg">{Name}</h3>
             <p className="text-[#C5C5C5] text-sm">12250111</p>
             <p className="text-[#C5C5C5] text-sm">
               PT. Pertamina Kota Pekanbaru
@@ -184,28 +195,20 @@ export default function RootLayout({
               <b>Supervisor</b>
             </h3>
             <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
-              <Image
-                src="/avatar.png"
-                alt="Supervisor 1"
-                className="rounded-full mr-2"
-                width={50}
-                height={50}
-              />
-              <div className="supervisor-info">
-                <h4 className="font-bold text-sm">Pizaini</h4>
+              <div className="flex items-center justify-center w-[50px] h-[50px] bg-[#9FD8E4] rounded-full text-white text-2xl font-semibold">
+                {getInitials(NameDosenPembimbing)}
+              </div>
+              <div className="supervisor-info ml-2">
+                <h4 className="font-bold text-sm">{NameDosenPembimbing}</h4>
                 <p className="text-xs">Dosen Pembimbing</p>
               </div>
             </div>
             <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
-              <Image
-                src="/avatar.png"
-                alt="Supervisor 2"
-                className="rounded-full mr-2"
-                width={50}
-                height={50}
-              />
-              <div className="supervisor-info">
-                <h4 className="font-bold text-sm">Yelfi Fitriani</h4>
+            <div className="flex items-center justify-center w-[50px] h-[50px] bg-[#9FD8E4] rounded-full text-white text-2xl font-semibold">
+                {getInitials(NamePembimbingInstansi)}
+              </div>
+              <div className="supervisor-info ml-2">
+                <h4 className="font-bold text-sm">{NamePembimbingInstansi}</h4>
                 <p className="text-xs">Pembimbing Instansi</p>
               </div>
             </div>
