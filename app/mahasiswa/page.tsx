@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import FAQModal from "../../../components/mahasiswa/FAQsModal"; 
+import FAQModal from "../../components/mahasiswa/FAQsModal"; 
 
 const DashboardMahasiswa = () => {
   const totalDays = 30;

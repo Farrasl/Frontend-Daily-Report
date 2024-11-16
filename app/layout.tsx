@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Reportify KP",
   description:
-    "Sistem Informasi Daily Report KP Teknik Informatika UIN Suska Riau",
+    "Sistem Informasi Daily Report Kerja Praktik Teknik Informatika Universitas Islam Negeri Sultan Syarif Kasim Riau",
 };
 
 export default function RootLayout({

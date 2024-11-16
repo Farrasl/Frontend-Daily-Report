@@ -22,7 +22,7 @@ export default function RootLayout({
               <ul className="flex lg:flex-col gap-5">
                 <li className="relative group">
                   <Link
-                    href="/mahasiswa/dashboard"
+                    href="/mahasiswa"
                     className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
                   >
                     <svg

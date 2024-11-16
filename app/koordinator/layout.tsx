@@ -16,7 +16,7 @@ export default function RootLayout({
               <ul className="flex lg:flex-col gap-5">
                 <li className="relative group">
                   <Link
-                    href="/koordinator/dashboard"
+                    href="/koordinator"
                     className="flex items-center justify-center lg:justify-start gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
                   >
                     <svg
@@ -39,7 +39,7 @@ export default function RootLayout({
                       </defs>
                     </svg>
 
-                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] ">
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
                       Dashboard
                     </span>
                   </Link>
@@ -134,7 +134,7 @@ export default function RootLayout({
                 width={150}
                 height={150}
               />
-              <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full"></div>
+              <div className="absolute top-0 left-0 w-[150px] h-[150px] border-4 border-[#A2E2E8] rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] animate-spin"></div>
             </div>
             <h3 className="font-bold text-lg">Liza Afriyanti, M.Kom</h3>
             <br />
