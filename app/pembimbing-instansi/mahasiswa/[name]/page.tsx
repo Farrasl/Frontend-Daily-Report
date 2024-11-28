@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {use, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReviewModal from "../../../../components/pembimbing-instansi/ReviewModal";
 import EvaluasiModal from "../../../../components/pembimbing-instansi/EvaluasiModal";
 
-const DailyReportPage = ({ params }: { params: { name: string } }) => {
-  const { name } = params;
+const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
+  const { name } = use(params);
 
   const profileData = {
     nim: "12250120341",
@@ -160,7 +160,7 @@ const DailyReportPage = ({ params }: { params: { name: string } }) => {
                     ) : (
                       <button
                         onClick={(e) => handleCommentClick(index, e)}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#397480] text-white rounded-full hover:bg-[#2FFF00] transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#397480] text-white rounded-full transition-colors hover:scale-105"
                       >
                         <svg
                           width="18"

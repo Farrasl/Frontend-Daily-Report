@@ -3,12 +3,50 @@
 import { useEffect, useState } from "react";
 import ReviewModal from "@/components/mahasiswa/ReviewModal";
 
+// Interface for the API data
+interface IDokumentasi {
+  dailyreportId?: string;
+  filePath: string;
+  fileType: string;
+}
+
+interface IDailyReport {
+  _id: string;
+  tanggal: string;
+  waktuMulai: string;
+  waktuSelesai: string;
+  judulAgenda: string;
+  deskripsiAgenda: string;
+  status: string;
+  dokumentasi?: IDokumentasi[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Interface matching ReviewModal's expected format
+interface Task {
+  task: string;
+  date: string;
+  status: string;
+}
+
 const DailyReport = () => {
   const [currentDate, setCurrentDate] = useState("");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
-    null
-  );
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(null);
+  const [apiData, setApiData] = useState<IDailyReport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Convert API data to Task format
+  const convertToTasks = (dailyReports: IDailyReport[]): Task[] => {
+    return dailyReports.map(report => ({
+      task: report.judulAgenda,
+      date: formatDate(report.tanggal),
+      
+      status: report.status
+    }));
+  };
 
   useEffect(() => {
     const today = new Date();
@@ -21,128 +59,25 @@ const DailyReport = () => {
     setCurrentDate(today.toLocaleDateString("id-ID", options));
   }, []);
 
-  const tasks = [
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Jumat, 20 Oktober 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Sabtu, 21 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Minggu, 22 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Senin, 23 Oktober 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Selasa, 24 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Rabu, 25 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Kamis, 26 Oktober 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Jumat, 27 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Sabtu, 28 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Minggu, 29 Oktober 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Senin, 30 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Selasa, 31 Oktober 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Rabu, 1 November 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Kamis, 2 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Jumat, 3 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Sabtu, 4 November 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Minggu, 5 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Senin, 6 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Selasa, 7 November 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Rabu, 8 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Kamis, 9 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Jumat, 10 November 2024",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan Router Baru di Ruangan Boss",
-      date: "Jumat, 11 November 2024",
-      status: "Sudah",
-    },
-    {
-      task: "Perancangan Server Baru di Ruang Karyawan",
-      date: "Sabtu, 12 November 2024",
-      status: "Sudah",
-    },
-  ];
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('/api/daily-report');
+        if (!response.ok) {
+          throw new Error('Failed to fetch tasks');
+        }
+        const data = await response.json();
+        setApiData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const handleRowClick = (taskIndex: number) => {
     setSelectedTaskIndex(taskIndex);
@@ -154,9 +89,38 @@ const DailyReport = () => {
     setSelectedTaskIndex(null);
   };
 
+  // Format date to Indonesian format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-screen bg-white flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 h-screen bg-white flex items-center justify-center">
+        <div className="text-xl text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  // Convert API data to Task format for the table and modal
+  const tasks = convertToTasks(apiData);
+
   return (
     <div className="flex-1 h-screen bg-white">
-      {/* Daily Report content */}
       <div className="px-8">
         <div className="mt-8 mb-4">
           <h1 className="text-2xl font-bold">Daily Report</h1>
@@ -210,7 +174,7 @@ const DailyReport = () => {
               <tbody className="divide-y divide-gray-2">
                 {tasks.map((task, index) => (
                   <tr
-                    key={index}
+                    key={apiData[index]._id}
                     onClick={() => handleRowClick(index)}
                     className="hover:bg-[#A1D1DD] transition-colors duration-150 cursor-pointer"
                   >
@@ -244,7 +208,7 @@ const DailyReport = () => {
         onClose={handleCloseModal}
         taskIndex={selectedTaskIndex}
         tasks={tasks}
-      />{" "}
+      />
     </div>
   );
 };

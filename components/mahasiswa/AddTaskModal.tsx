@@ -20,7 +20,7 @@ interface TaskData {
   timeOut: string;
   title: string;
   description: string;
-  file: File | null;
+  files: File[];
   date: Date;
 }
 
@@ -47,7 +47,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
     timeOut: "",
     title: "",
     description: "",
-    file: null,
+    files: [],
     date: new Date(),
   });
 
@@ -127,25 +127,93 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   };
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setTaskData((prev) => ({ ...prev, file }));
-    }
+    const newFiles = event.target.files ? Array.from(event.target.files) : [];
+    setTaskData((prev) => ({ ...prev, files: [...prev.files, ...newFiles] }));
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      setTaskData((prev) => ({ ...prev, file }));
-    }
+    const droppedFiles = event.dataTransfer.files
+      ? Array.from(event.dataTransfer.files)
+      : [];
+    setTaskData((prev) => ({
+      ...prev,
+      files: [...prev.files, ...droppedFiles],
+    }));
   };
 
   const handleSubmit = async () => {
-    // Add your submit logic here
-    console.log("Submitting task:", taskData);
+    const [hoursIn, minutesIn] = taskData.timeIn.split(":").map(Number);
+    const [hoursOut, minutesOut] = taskData.timeOut.split(":").map(Number);
+
+    const timeInMinutes = hoursIn * 60 + minutesIn;
+    const timeOutMinutes = hoursOut * 60 + minutesOut;
+
+    if (timeInMinutes >= timeOutMinutes) {
+      alert("Jam Masuk harus lebih awal dari Jam Keluar.");
+      return;
+    }
+
+    if (
+      !taskData.timeIn ||
+      !taskData.timeOut ||
+      !taskData.files ||
+      !taskData.title ||
+      !taskData.description ||
+      !taskData.date
+    ) {
+      alert("Semua field harus diisi");
+      return;
+    }
+
+    const formattedDate = taskData.date.toISOString();
+
+    // Pastikan dokumentasi berisi file yang benar dengan fileType dan filePath
+    const dokumentasi = taskData.files.map((file) => ({
+      namaDokumentasi: file.name,
+      tipeDokumentasi: file.type, // Menyertakan tipe file
+      fileType: file.type, // Menambahkan fileType
+      filePath: file.name, // Menambahkan filePath (nama file sebagai path)
+    }));
+
+    const requestBody = {
+      tanggal: formattedDate,
+      waktuMulai: taskData.timeIn,
+      waktuSelesai: taskData.timeOut,
+      judulAgenda: taskData.title,
+      deskripsiAgenda: taskData.description,
+      status: "Belum",
+      dokumentasi: dokumentasi, // Mengirim dokumentasi dengan fileType dan filePath
+    };
+
+    try {
+      const response = await fetch("/api/daily-report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Task created successfully:", data);
+      alert("Task berhasil disimpan.");
+      onClose();
+    } catch (error) {
+      console.error("Failed to save task:", error);
+      alert(
+        `Gagal menyimpan task: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   };
 
   if (!isOpen) return null;
@@ -158,7 +226,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
           className="absolute right-5 top-2 text-gray-500 hover:text-gray-700 text-lg"
           aria-label="Close modal"
         >
-          ✕  
+          ✕
         </button>
 
         <h2 className="text-lg font-bold mb-4 text-center">
@@ -382,6 +450,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
               type="file"
               ref={fileInputRef}
               onChange={handleFileSelect}
+              multiple
               className="hidden"
             />
             <div
@@ -390,6 +459,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               className="border-2 border-dashed rounded-md p-4 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+              style={{ position: "relative", height: "125px", width: "100%" }} // Ensure the box has a fixed height
             >
               <div className="flex justify-center mb-1">
                 <svg
@@ -407,10 +477,45 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                 </svg>
               </div>
               <p className="text-xs text-gray-500">
-                {taskData.file
-                  ? `File selected: ${taskData.file.name}`
-                  : "Select File or Drag and Drop"}
+                {taskData.files.length > 0
+                  ? `${taskData.files.length} file(s) selected`
+                  : "Select Files or Drag and Drop"}
               </p>
+              {taskData.files.length > 0 && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {taskData.files.map(
+                    (file, index) =>
+                      file.type.startsWith("image/") && (
+                        <div
+                          key={index}
+                          className="relative w-full h-full flex items-center justify-center"
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Preview of ${file.name}`}
+                            className="object-contain max-w-full max-h-full rounded"
+                            style={{
+                              objectFit: "contain", // Ensures the image fits within the box without distortion
+                            }}
+                          />
+                          {/* Delete Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevents triggering the file input click
+                              setTaskData((prev) => ({
+                                ...prev,
+                                files: prev.files.filter((_, i) => i !== index),
+                              }));
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

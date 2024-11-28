@@ -89,7 +89,7 @@ const ReviewModal = ({
               <div>
                 <h3 className="text-sm text-gray-500 mb-2">Documentation</h3>
                 <Image
-                  src="/avatar.png"
+                  src="/kerja.jpg"
                   alt="Documentation screenshot"
                   width={200}
                   height={200}

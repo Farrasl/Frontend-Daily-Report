@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import BimbinganKPModal from "../../../../../components/dosen-pembimbing/BimbinganKPModal";
+import React, {use, useState } from "react";
+import BimbinganKPModal from "../../../../../components/dosen-pembimbing/AddBimbinganModal";
 import BimbinganModal from "../../../../../components/mahasiswa/BimbinganModal";
 
 interface ProfileData {
@@ -24,8 +24,8 @@ interface BimbinganHistoryItem {
   statusPenerimaan: string;
 }
 
-const BimbinganKP = ({ params }: { params: { name: string } }) => {
-  const { name } = params;
+const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
+  const { name } = use(params);
 
   const [isBimbinganKPModalOpen, setIsBimbinganKPModalOpen] = useState(false);
   const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);

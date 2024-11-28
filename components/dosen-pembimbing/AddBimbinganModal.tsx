@@ -1,7 +1,5 @@
 "use client";
-import React from 'react';
-
-interface BimbinganKPModalProps {
+interface AddBimbinganModalProps {
   date: string;
   evaluation: string;
   setDate: (date: string) => void;
@@ -10,14 +8,14 @@ interface BimbinganKPModalProps {
   handleClose: () => void;
 }
 
-const BimbinganKPModal: React.FC<BimbinganKPModalProps> = ({
+const AddBimbinganModal = ({
   date,
   evaluation,
   setDate,
   setEvaluation,
   handleSubmit,
   handleClose,
-}) => {
+}: AddBimbinganModalProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg sm:max-w-[500px] w-full p-6 space-y-6">
@@ -69,4 +67,4 @@ const BimbinganKPModal: React.FC<BimbinganKPModalProps> = ({
   );
 };
 
-export default BimbinganKPModal;
+export default AddBimbinganModal;

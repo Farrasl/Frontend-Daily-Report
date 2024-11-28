@@ -1,8 +1,8 @@
-import React from "react";
+import {use} from "react";
 import Link from "next/link";
 
-const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
-  const { name } = params;
+const MahasiswaPage = ({ params }: { params: Promise<{ name: string }> }) => {
+  const { name } = use(params);
 
   // This would typically come from an API/database
   const profileData = {
@@ -75,7 +75,7 @@ const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
           href={`/koordinator/mahasiswa/${name}/daily-report`}
           className="block"
         >
-          <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors">
+          <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors hover:scale-105">
             <div className="w-24 h-24 mx-auto mb-4">
               <svg
                 className="w-full h-full"
@@ -95,7 +95,7 @@ const MahasiswaPage = async ({ params }: { params: { name: string } }) => {
           href={`/koordinator/mahasiswa/${name}/bimbingan-kp`}
           className="block"
         >
-          <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors">
+          <div className="bg-gradient-to-b from-[#9FD8E4] via-[#9FD8E4] to-[#F8F8F8] p-6 rounded-lg text-center hover:bg-sky-200 transition-colors hover:scale-105">
             <div className="w-24 h-24 mx-auto mb-4">
               <svg
                 className="w-full h-full"

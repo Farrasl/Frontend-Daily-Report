@@ -1,7 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, {use, useState } from "react";
 import Image from "next/image";
-import BimbinganKPModal from "../../../../../components/dosen-pembimbing/BimbinganKPModal";
 import BimbinganModal from "../../../../../components/mahasiswa/BimbinganModal";
 
 
@@ -26,8 +25,8 @@ interface BimbinganHistoryItem {
 }
 
 
-const BimbinganKP = ({ params }: { params: { name: string } }) => {
-  const { name } = params;
+const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
+  const { name } = use(params);
 
   const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(null);

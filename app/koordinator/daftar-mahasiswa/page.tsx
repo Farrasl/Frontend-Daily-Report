@@ -84,7 +84,7 @@ const DaftarMahasiswa = () => {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold mr-[300px]">Daftar Nama Bimbingan Kerja Praktik</h2>
+        <h2 className="text-xl font-bold mr-[300px]">Daftar Nama Mahasiswa Kerja Praktik</h2>
         <div className="relative">
           <input
             type="text"

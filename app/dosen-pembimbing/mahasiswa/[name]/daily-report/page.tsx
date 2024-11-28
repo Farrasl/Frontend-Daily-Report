@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from "next/navigation";
 import ReviewModal from "../../../../../components/pembimbing-instansi/ReviewModal";
 
-const DailyReportPage = ({ params }: { params: { name: string } }) => {
-  const { name } = params;
+const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
+  const { name } = use(params);
 
   const profileData = {
     nim: "12250120341",

@@ -31,8 +31,8 @@ const ReviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-6xl relative shadow-lg max-h-[90vh] flex flex-col">
-        {/* Header Section - Fixed */}
+      <div className="bg-white rounded-lg w-full max-w-4xl relative shadow-lg max-h-[90vh] overflow-auto">
+      {/* Header Section - Fixed */}
         <div className="p-6 border-b">
           <button
             onClick={onClose}
@@ -55,7 +55,11 @@ const ReviewModal = ({
 
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Review Daily Report</h2>
-            <div className="bg-[#99CC33] text-gray-700 mr-6 px-4 py-2 rounded-lg flex justify-between items-center">
+            <div
+              className={`${
+                task.status === "Sudah" ? "bg-[#FFCC00]" : "bg-[#99CC33]"
+              } mr-6 px-4 py-2 rounded-lg flex justify-between items-center`}
+            >
               <p className="text-sm">
                 Deskripsi agenda dapat diganti sebelum di acc Pembimbing
                 Instansi.
@@ -105,7 +109,7 @@ const ReviewModal = ({
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        task.status === "Done" ? "bg-green-500" : "bg-red-500"
+                        task.status === "Sudah" ? "bg-green-500" : "bg-red-500"
                       }`}
                     ></div>
                     <p className="font-medium">{task.status}</p>
@@ -129,10 +133,10 @@ const ReviewModal = ({
             <div className="bg-[#9FD8E4] p-6 rounded-lg h-[225px] overflow-y-auto">
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-sm text-gray-500">DESKRIPSI AGENDA</h2>
-                <button 
-                className="p-1"
-                onClick={() => setShowAddAgendaModal(true)}
->
+                <button
+                  className="p-1"
+                  onClick={() => setShowAddAgendaModal(true)}
+                >
                   <svg
                     width="24"
                     height="24"
@@ -199,11 +203,20 @@ const ReviewModal = ({
                 </p>
               </div>
             </div>
+            
+          {/* Evaluasi Agenda Section */}
+          <div className="bg-white border border-[#9FD8E4] p-4 rounded-lg">
+            <h3 className="text-sm text-gray-500">Evaluasi Agenda</h3>
+            <p className="text-gray-700 mt-2">
+              Saat design UI/UX kedepannya bisa pakai figma saja, untuk Abmi
+              terus berlatih untuk lebih baik kedepannya ya.
+            </p>
+          </div>
           </div>
         </div>
       </div>
-            {/* AddAgendaModal */}
-            <AddAgendaModal
+      {/* AddAgendaModal */}
+      <AddAgendaModal
         isOpen={showAddAgendaModal}
         onClose={() => setShowAddAgendaModal(false)}
       />

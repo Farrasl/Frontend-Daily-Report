@@ -17,7 +17,6 @@ type BimbinganHistoryItem = {
 };
 
 const RiwayatBimbingan = () => {
-  // Update selectedData to use BimbinganHistoryItem | null
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(
     null
@@ -55,41 +54,81 @@ const RiwayatBimbingan = () => {
 
   return (
     <div className="flex-1 h-screen overflow-y-auto bg-white">
-      <div className="px-8">
-        <div className="my-8">
-          <h1 className="text-2xl font-bold">Riwayat Bimbingan</h1>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="my-4 sm:my-6 lg:my-8">
+          <h1 className="text-xl sm:text-2xl font-bold">Riwayat Bimbingan</h1>
         </div>
 
-        <div className="bg-[#D9F9FF] rounded-[20px] p-4">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left">
-                <th className="py-2 px-4 text-[#323232]">Tanggal</th>
-                <th className="py-2 px-4 text-[#323232] text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {BimbinganHistory.map((item, index) => (
-                <tr key={index} className="border-t border-sky-100">
-                  <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
-                  <td className="py-3 px-4 text-right">
-                    {item.aksi === "Lihat" ? (
-                      <div className="flex items-center justify-end gap-2">
+        {/* Mobile view - Card layout */}
+        <div className="block sm:hidden">
+          <div className="space-y-4">
+            {BimbinganHistory.map((item, index) => (
+              <div 
+                key={index} 
+                className="bg-[#D9F9FF] rounded-lg p-4 shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-sm font-medium text-[#323232]">{item.tanggal}</p>
+                  <button
+                    className="text-[#2C707B] hover:text-[#9FD8E4] text-sm font-medium focus:outline-none"
+                    onClick={() => handleViewClick(item)}
+                  >
+                    {item.aksi}
+                  </button>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <p>Status: {item.status}</p>
+                  <p className="truncate">Evaluasi: {item.evaluasi}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tablet and Desktop view - Table layout */}
+        <div className="hidden sm:block">
+          <div className="bg-[#D9F9FF] rounded-[20px] p-4 overflow-x-auto">
+            <table className="w-full min-w-full table-auto">
+              <thead>
+                <tr className="text-left">
+                  <th className="py-2 px-4 text-[#323232] whitespace-nowrap">Tanggal</th>
+                  <th className="py-2 px-4 text-[#323232] text-right whitespace-nowrap">Status</th>
+                  <th className="py-2 px-4 text-[#323232] text-right whitespace-nowrap">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {BimbinganHistory.map((item, index) => (
+                  <tr 
+                    key={index} 
+                    className="border-t border-sky-100 hover:bg-sky-50 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
+                    <td className="py-3 px-4 text-right">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        item.status === 'done' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {item.status === 'done' ? 'Selesai' : 'Menunggu'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      {item.aksi === "Lihat" ? (
                         <button
-                          className="text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none"
+                          className="inline-flex items-center text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none transition-colors"
                           onClick={() => handleViewClick(item)}
                         >
-                          {item.aksi}
+                          <span>{item.aksi}</span>
                         </button>
-                      </div>
-                    ) : (
-                      <span className="text-[#C5C5C5]">{item.aksi}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      ) : (
+                        <span className="text-[#C5C5C5]">{item.aksi}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

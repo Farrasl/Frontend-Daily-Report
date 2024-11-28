@@ -9,14 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "lucide-react": "^0.460.0",
+    "mongoose": "^8.8.1",
     "next": "15.0.1",
     "react": "19.0.0-rc-69d4b800-20241021",
-    "react-dom": "19.0.0-rc-69d4b800-20241021"
+    "react-dom": "19.0.0-rc-69d4b800-20241021",
+    "recharts": "^2.13.3"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/recharts": "^1.8.29",
     "eslint": "^8",
     "eslint-config-next": "15.0.1",
     "postcss": "^8.4.47",
