@@ -92,7 +92,6 @@ const RiwayatBimbingan = () => {
               <thead>
                 <tr className="text-left">
                   <th className="py-2 px-4 text-[#323232] whitespace-nowrap">Tanggal</th>
-                  <th className="py-2 px-4 text-[#323232] text-right whitespace-nowrap">Status</th>
                   <th className="py-2 px-4 text-[#323232] text-right whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
@@ -100,18 +99,9 @@ const RiwayatBimbingan = () => {
                 {BimbinganHistory.map((item, index) => (
                   <tr 
                     key={index} 
-                    className="border-t border-sky-100 hover:bg-sky-50 transition-colors"
+                    className="border-t border-sky-100 transition-colors"
                   >
                     <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
-                    <td className="py-3 px-4 text-right">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        item.status === 'done' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {item.status === 'done' ? 'Selesai' : 'Menunggu'}
-                      </span>
-                    </td>
                     <td className="py-3 px-4 text-right">
                       {item.aksi === "Lihat" ? (
                         <button

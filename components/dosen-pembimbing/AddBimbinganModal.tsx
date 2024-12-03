@@ -18,7 +18,8 @@ const AddBimbinganModal = ({
 }: AddBimbinganModalProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg sm:max-w-[500px] w-full p-6 space-y-6">
+      <div className="bg-white rounded-lg shadow-lg sm:max-w-[500px] w-[90%] p-6 space-y-6">
+
         <h2 className="text-xl font-semibold">Beri Evaluasi Bimbingan</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

@@ -82,8 +82,8 @@ const DaftarMahasiswa = () => {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold mr-[300px]">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-center sm:text-left mb-4 sm:mb-0 lg:mr-[300px] md:mr-[100px]">
           Daftar Nama Bimbingan Kerja Praktik
         </h2>
         <div className="relative">
@@ -94,7 +94,7 @@ const DaftarMahasiswa = () => {
             onChange={handleSearchChange}
             className="px-4 py-2 pl-10 text-gray-700 bg-[#D9D9D9] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {/* Search icon */}
+          {/* Search icon */} 
           <svg
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             width="24"
@@ -118,7 +118,7 @@ const DaftarMahasiswa = () => {
               <div
                 key={student.name}
                 onClick={() => handleCardClick(student.name)}
-                className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer hover:bg-[#C5F2FF] transition-colors min-w-[450px] flex-grow"
+                className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer hover:bg-[#C5F2FF] transition-colors lg:min-w-[450px] flex-grow"
               >
                 <img
                   src={student.imgSrc}

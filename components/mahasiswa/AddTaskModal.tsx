@@ -16,10 +16,10 @@ interface DayInfo {
 }
 
 interface TaskData {
-  timeIn: string;
-  timeOut: string;
-  title: string;
-  description: string;
+  waktuMulai: string;
+  waktuSelesai: string;
+  judulAgenda: string;
+  deskripsiAgenda: string;
   files: File[];
   date: Date;
 }
@@ -43,10 +43,10 @@ const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   const [taskData, setTaskData] = useState<TaskData>({
-    timeIn: "",
-    timeOut: "",
-    title: "",
-    description: "",
+    waktuMulai: "",
+    waktuSelesai: "",
+    judulAgenda: "",
+    deskripsiAgenda: "",
     files: [],
     date: new Date(),
   });
@@ -55,6 +55,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [agendaList, setAgendaList] = useState<TaskData[]>([]);
 
   // Generate array of years (10 years before and after current year)
   const currentYear = new Date().getFullYear();
@@ -143,84 +144,89 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
       files: [...prev.files, ...droppedFiles],
     }));
   };
-
-  const handleSubmit = async () => {
-    const [hoursIn, minutesIn] = taskData.timeIn.split(":").map(Number);
-    const [hoursOut, minutesOut] = taskData.timeOut.split(":").map(Number);
-
-    const timeInMinutes = hoursIn * 60 + minutesIn;
-    const timeOutMinutes = hoursOut * 60 + minutesOut;
-
-    if (timeInMinutes >= timeOutMinutes) {
-      alert("Jam Masuk harus lebih awal dari Jam Keluar.");
-      return;
-    }
-
+  const handleTambahAgenda = () => {
+    // Validate fields
     if (
-      !taskData.timeIn ||
-      !taskData.timeOut ||
-      !taskData.files ||
-      !taskData.title ||
-      !taskData.description ||
-      !taskData.date
+      !taskData.waktuMulai ||
+      !taskData.waktuSelesai ||
+      !taskData.judulAgenda ||
+      !taskData.deskripsiAgenda ||
+      taskData.files.length === 0
     ) {
-      alert("Semua field harus diisi");
+      alert("Semua field agenda harus diisi.");
       return;
     }
-
-    const formattedDate = taskData.date.toISOString();
-
-    // Pastikan dokumentasi berisi file yang benar dengan fileType dan filePath
-    const dokumentasi = taskData.files.map((file) => ({
-      namaDokumentasi: file.name,
-      tipeDokumentasi: file.type, // Menyertakan tipe file
-      fileType: file.type, // Menambahkan fileType
-      filePath: file.name, // Menambahkan filePath (nama file sebagai path)
+  
+    // Add the agenda to the list
+    setAgendaList((prev) => {
+      const updatedAgendaList = [...prev, taskData];
+      console.log("Agenda list updated:", updatedAgendaList);  // Debugging line
+      return updatedAgendaList;
+    });
+  
+    // Reset agenda fields, but keep the date
+    setTaskData((prev) => ({
+      ...prev,
+      waktuMulai: "",
+      waktuSelesai: "",
+      judulAgenda: "",
+      deskripsiAgenda: "",
+      files: [],
     }));
-
+  };  
+  
+  const handleSubmit = async () => {
+    // Jika belum ada agenda dalam daftar, tambahkan taskData saat ini
+    if (agendaList.length === 0) {
+      setAgendaList((prev) => [...prev, taskData]);
+    }
+  
+    // Pastikan ada agenda untuk disimpan
+    if (agendaList.length === 0 && !taskData.judulAgenda) {
+      alert("Minimal tambahkan satu agenda.");
+      return;
+    }
+  
+    // Siapkan data yang akan dikirim
     const requestBody = {
-      tanggal: formattedDate,
-      waktuMulai: taskData.timeIn,
-      waktuSelesai: taskData.timeOut,
-      judulAgenda: taskData.title,
-      deskripsiAgenda: taskData.description,
+      tanggal: taskData.date.toISOString(),
       status: "Belum",
-      dokumentasi: dokumentasi, // Mengirim dokumentasi dengan fileType dan filePath
+      agenda: [...agendaList, taskData].map((agenda) => ({
+        waktuMulai: agenda.waktuMulai,
+        waktuSelesai: agenda.waktuSelesai,
+        judulAgenda: agenda.judulAgenda,
+        deskripsiAgenda: agenda.deskripsiAgenda,
+        dokumentasi: agenda.files.map((file) => ({
+          filePath: file.name,
+          fileType: file.type,
+        })),
+      })),
     };
-
+  
     try {
       const response = await fetch("/api/daily-report", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Error: ${response.status}`);
+        throw new Error(`Error: ${response.status}`);
       }
-
-      const data = await response.json();
-      console.log("Task created successfully:", data);
+  
       alert("Task berhasil disimpan.");
       onClose();
     } catch (error) {
-      console.error("Failed to save task:", error);
-      alert(
-        `Gagal menyimpan task: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      alert(`Gagal menyimpan task: ${error}`);
     }
   };
-
-  if (!isOpen) return null;
+  
+  
+  if (!isOpen) return null; 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-4 w-full max-w-[1000px] relative">
+      <div className="bg-white rounded-lg p-4 w-[90%] md:max-w-[1000px] relative">
         <button
           onClick={onClose}
           className="absolute right-5 top-2 text-gray-500 hover:text-gray-700 text-lg"
@@ -410,15 +416,15 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             <div className="space-y-1">
               <label
                 className="text-xs font-medium text-gray-600"
-                htmlFor="timeIn"
+                htmlFor="waktuMulai"
               >
                 Jam Masuk
               </label>
               <input
-                id="timeIn"
-                name="timeIn"
+                id="waktuMulai"
+                name="waktuMulai"
                 type="time"
-                value={taskData.timeIn}
+                value={taskData.waktuMulai}
                 onChange={handleInputChange}
                 className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
               />
@@ -426,15 +432,15 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             <div className="space-y-1">
               <label
                 className="text-xs font-medium text-gray-600"
-                htmlFor="timeOut"
+                htmlFor="waktuSelesai"
               >
                 Jam Keluar
               </label>
               <input
-                id="timeOut"
-                name="timeOut"
+                id="waktuSelesai"
+                name="waktuSelesai"
                 type="time"
-                value={taskData.timeOut}
+                value={taskData.waktuSelesai}
                 onChange={handleInputChange}
                 className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
               />
@@ -519,37 +525,37 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             </div>
           </div>
 
-          {/* Title Input */}
+          {/* judulAgenda Input */}
           <div className="space-y-1">
             <label
               className="text-xs font-medium text-gray-600"
-              htmlFor="title"
+              htmlFor="judulAgenda"
             >
               Judul Agenda
             </label>
             <input
-              id="title"
-              name="title"
+              id="judulAgenda"
+              name="judulAgenda"
               type="text"
-              value={taskData.title}
+              value={taskData.judulAgenda}
               onChange={handleInputChange}
               placeholder="Masukkan judul agenda"
               className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
             />
           </div>
 
-          {/* Description Input */}
+          {/* deskripsiAgenda Input */}
           <div className="space-y-1">
             <label
               className="text-xs font-medium text-gray-600"
-              htmlFor="description"
+              htmlFor="deskripsiAgenda"
             >
               Deskripsi
             </label>
             <textarea
-              id="description"
-              name="description"
-              value={taskData.description}
+              id="deskripsiAgenda"
+              name="deskripsiAgenda"
+              value={taskData.deskripsiAgenda}
               onChange={handleInputChange}
               placeholder="Masukkan deskripsi"
               rows={3}
@@ -557,8 +563,30 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end mt-4">
+          {/* Submit and Add Agenda Buttons */}
+          <div className="flex justify-center mt-4 gap-[650px]">
+            {/* Tambah Agenda Button */}
+            <button
+              onClick={handleTambahAgenda}
+              className="bg-[#2C707B] text-white rounded-[20px] px-4 py-2 flex items-center gap-2"
+            >
+              <svg
+                width="25"
+                height="25"
+                viewBox="0 0 25 25"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="25" height="25" rx="5" fill="#FFBF5F" />
+                <path
+                  d="M17 13.7143H12.7143V18H11.2857V13.7143H7V12.2857H11.2857V8H12.7143V12.2857H17V13.7143Z"
+                  fill="#323232"
+                />
+              </svg>
+              Tambah Agenda
+            </button>
+
+            {/* Submit Button */}
             <button
               onClick={handleSubmit}
               className="bg-[#52BD3A] text-white rounded-[20px] px-4 py-2 flex items-center gap-2"

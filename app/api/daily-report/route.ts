@@ -3,8 +3,17 @@ import DailyReport from "@/app/models/DailyReport";
 import { NextResponse } from "next/server";
 
 class DailyReportController {
+  async connectDB() {
+    try {
+      await MongoDB.connect(); // Menghubungkan ke database
+    } catch (error) {
+      console.error("Database connection failed:", error);
+      throw new Error("Unable to connect to the database.");
+    }
+  }
+
   async getAll() {
-    await MongoDB.connect(); // Correct usage of the static method
+    await this.connectDB();
     try {
       const dailyReports = await DailyReport.findAll();
       return NextResponse.json(dailyReports, { status: 200 });
@@ -12,27 +21,50 @@ class DailyReportController {
       console.error("Error fetching DailyReports:", error);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
+  } 
+
+  validateCreatePayload(data: any) {
+    const requiredFields = [
+      "tanggal",
+      "status",
+      "agenda",
+    ];
+
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        return `${field} is required`;
+      }
+    }
+
+    if (Array.isArray(data.agenda)) {
+      for (const agenda of data.agenda) {
+        const agendaFields = [
+          "waktuMulai",
+          "waktuSelesai",
+          "judulAgenda",
+          "deskripsiAgenda",
+        ];
+        for (const field of agendaFields) {
+          if (!agenda[field]) {
+            return `${field} in agenda is required`;
+          }
+        }
+      }
+    } else {
+      return "agenda must be an array";
+    }
+
+    return null;
   }
 
   async create(req: Request) {
-    await MongoDB.connect(); // Correct usage of the static method
+    await this.connectDB();
     try {
       const data = await req.json();
 
-      const requiredFields = [
-        "tanggal",
-        "waktuMulai",
-        "waktuSelesai",
-        "dokumentasi",
-        "judulAgenda",
-        "deskripsiAgenda",
-        "status",
-      ];
-
-      for (const field of requiredFields) {
-        if (!data[field]) {
-          return NextResponse.json({ message: `${field} is required` }, { status: 400 });
-        }
+      const validationError = this.validateCreatePayload(data);
+      if (validationError) {
+        return NextResponse.json({ message: validationError }, { status: 400 });
       }
 
       const newDailyReport = await DailyReport.create(data);
@@ -44,7 +76,7 @@ class DailyReportController {
   }
 
   async update(req: Request) {
-    await MongoDB.connect(); // Correct usage of the static method
+    await this.connectDB();
     try {
       const { _id, ...data } = await req.json();
 
@@ -66,7 +98,7 @@ class DailyReportController {
   }
 
   async delete(req: Request) {
-    await MongoDB.connect(); // Correct usage of the static method
+    await this.connectDB();
     try {
       const { searchParams } = new URL(req.url);
       const _id = searchParams.get("_id");

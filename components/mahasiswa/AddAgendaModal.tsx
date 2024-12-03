@@ -60,13 +60,13 @@ const AddAgendaModal = ({ isOpen, onClose }: AddAgendaModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-4 w-full max-w-[1000px] relative">
+      <div className="bg-white rounded-lg p-4 w-[90%] md:max-w-[1000px] relative">
         <button
           onClick={onClose}
           className="absolute right-5 top-2 text-gray-500 hover:text-gray-700 text-lg"
           aria-label="Close modal"
         >
-          ✕  
+          ✕
         </button>
 
         <h2 className="text-lg font-bold mb-4 text-center">

@@ -1,12 +1,49 @@
 "use client";
 
-import React, {use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReviewModal from "../../../../components/pembimbing-instansi/ReviewModal";
 import EvaluasiModal from "../../../../components/pembimbing-instansi/EvaluasiModal";
 
+// Interface for the API data
+interface IDokumentasi {
+  dailyreportId?: string;
+  filePath: string;
+  fileType: string;
+}
+
+interface IDailyReport {
+  agenda: any;
+  _id: string;
+  tanggal: string;
+  waktuMulai: string;
+  waktuSelesai: string;
+  judulAgenda: string;
+  deskripsiAgenda: string;
+  status: string;
+  dokumentasi?: IDokumentasi[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Interface matching ReviewModal's expected format
+interface Task {
+  task: string;
+  date: string;
+  status: string;
+  uniqueKey: string; // Added unique key
+}
+
 const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
   const { name } = use(params);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isEvaluasiModalOpen, setIsEvaluasiModalOpen] = useState(false);
+  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
+    null
+  );
+  const [apiData, setApiData] = useState<IDailyReport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const profileData = {
     nim: "12250120341",
@@ -16,39 +53,50 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
     email: "abmisukma.e@gmail.com",
   };
 
-  const router = useRouter();
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [isEvaluasiModalOpen, setIsEvaluasiModalOpen] = useState(false);
-  const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
-    null
-  );
+  const convertToTasks = (dailyReports: IDailyReport[]): Task[] => {
+    return dailyReports.map((report, index) => {
+      const firstAgenda =
+        report.agenda && report.agenda.length > 0 ? report.agenda[0] : null;
+      return {
+        task: firstAgenda ? firstAgenda.judulAgenda : "No Agenda",
+        date: formatDate(report.tanggal),
+        status: report.status,
+        uniqueKey: `${report._id}-${index}`, // Create a unique key by combining ID and index
+      };
+    });
+  };
 
-  const tasks = [
-    {
-      task: 'Design UI "Daily Report"',
-      date: "Jumat, 20 Okt",
-      status: "Belum",
-    },
-    {
-      task: "Pemasangan router baru di ruangan Boss",
-      date: "Kamis, 19 Okt",
-      status: "Belum",
-    },
-    {
-      task: "#3 Perancangan server baru di ruang karyawan",
-      date: "Rabu, 18 Okt",
-      status: "Belum",
-    },
-    {
-      task: "#2 Perancangan server baru di ruang karyawan",
-      date: "Rabu, 18 Okt",
-      status: "Sudah",
-    },
-  ];
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch("/api/daily-report");
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        const data = await response.json();
+        console.log("Data fetched from API:", data); // Cek data yang diterima
+        setApiData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const handleRowClick = (taskIndex: number) => {
     setSelectedTaskIndex(taskIndex);
-    setIsReviewModalOpen(true);
+    setTimeout(() => {
+      setIsReviewModalOpen(true);
+    }, 0); // Use setTimeout to ensure this happens after the render cycle
+  };
+
+  const handleCloseModal = () => {
+    setIsReviewModalOpen(false);
+    setSelectedTaskIndex(null);
   };
 
   const handleCommentClick = (taskIndex: number, e: React.MouseEvent) => {
@@ -57,15 +105,40 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
     setIsEvaluasiModalOpen(true);
   };
 
-  const handleCloseReviewModal = () => {
-    setIsReviewModalOpen(false);
-    setSelectedTaskIndex(null);
-  };
-
   const handleCloseEvaluasiModal = () => {
     setIsEvaluasiModalOpen(false);
     setSelectedTaskIndex(null);
   };
+
+  // Format date to Indonesian format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-screen bg-white flex items-center justify-center">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 h-screen bg-white flex items-center justify-center">
+        <div className="text-xl text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  // Convert API data to Task format for the table and modal
+  const tasks = convertToTasks(apiData);
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -193,12 +266,13 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
       </div>
 
       {/* Review Modal */}
-      <ReviewModal
-        isOpen={isReviewModalOpen}
-        onClose={handleCloseReviewModal}
-        taskIndex={selectedTaskIndex}
-        tasks={tasks}
-      />
+      {selectedTaskIndex !== null && (
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={handleCloseModal}
+          dailyReport={apiData[selectedTaskIndex]} // Pass the selected daily report
+        />
+      )}
 
       {/* Evaluasi Modal */}
       <EvaluasiModal
