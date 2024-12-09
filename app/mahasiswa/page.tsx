@@ -14,19 +14,23 @@ const DashboardMahasiswa = () => {
   const faqData = [
     {
       question: "Cara mengisi Daily Report",
-      answer: "Halaman dashboard, pilih Tambah Laporan. Isi detail agenda seperti waktu, dokumentasi, deskripsi singkat, dan hasil yang dicapai. Pastikan deskripsi informatif tetapi singkat. Setelah selesai, klik Simpan untuk menyimpan."
+      answer:
+        "Halaman dashboard, pilih Tambah Laporan. Isi detail agenda seperti waktu, dokumentasi, deskripsi singkat, dan hasil yang dicapai. Pastikan deskripsi informatif tetapi singkat. Setelah selesai, klik Simpan untuk menyimpan.",
     },
     {
       question: "Kapan harus mengumpulkan Daily Report?",
-      answer: "Daily Report harus dikumpulkan setiap hari kerja sebelum pukul 17:00 WIB."
+      answer:
+        "Daily Report harus dikumpulkan setiap hari kerja sebelum pukul 17:00 WIB.",
     },
     {
       question: "Bagaimana jika saya lupa mengisi Daily Report?",
-      answer: "Jika Anda lupa mengisi Daily Report, segera hubungi pembimbing Anda dan isi laporan yang terlewat dengan mencantumkan alasan keterlambatan."
+      answer:
+        "Jika Anda lupa mengisi Daily Report, segera hubungi pembimbing Anda dan isi laporan yang terlewat dengan mencantumkan alasan keterlambatan.",
     },
     {
       question: "Apa yang harus dilaporkan dalam Daily Report?",
-      answer: "Daily Report harus mencakup:\n- Aktivitas yang dilakukan\n- Progress pekerjaan\n- Kendala yang dihadapi\n- Solusi yang diterapkan\n- Rencana untuk hari berikutnya"
+      answer:
+        "Daily Report harus mencakup:\n- Aktivitas yang dilakukan\n- Progress pekerjaan\n- Kendala yang dihadapi\n- Solusi yang diterapkan\n- Rencana untuk hari berikutnya",
     },
   ];
 
@@ -51,12 +55,12 @@ const DashboardMahasiswa = () => {
 
   return (
     <div className="flex-1 overflow-y-auto justify-center min-h-screen">
-      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl pt-16 lg:pt-0 mx-auto">
         <div className="my-4 sm:my-8">
           <h1 className="text-xl sm:text-2xl font-bold">Dashboard</h1>
           <p className="text-[#C5C5C5]">{currentDate}</p>
         </div>
-        
+
         {/* Welcome Box */}
         <div className="bg-[#D9F9FF] w-full p-4 sm:p-6 rounded-[20px] mb-4 sm:mb-8">
           <h2 className="text-lg sm:text-xl font-semibold">
@@ -73,15 +77,19 @@ const DashboardMahasiswa = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 sm:mb-8">
           {/* Work Day Box */}
           <div className="bg-[#D9F9FF] p-4 sm:p-6 rounded-[20px] shadow">
-            <h3 className="text-base sm:text-lg font-semibold">Hari Kerja Praktik</h3>
-            <p className="text-[#C5C5C5] mt-1 text-sm sm:text-base">Ayo, Semangat!</p>
+            <h3 className="text-base sm:text-lg font-semibold">
+              Hari Kerja Praktik
+            </h3>
+            <p className="text-[#C5C5C5] mt-1 text-sm sm:text-base">
+              Ayo, Semangat!
+            </p>
             <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-b from-[#7CE9FF] via-[#397480] to-[#0B191C] bg-clip-text text-transparent mt-1">
               Ke-1
             </p>
           </div>
 
           {/* FAQ Box */}
-          <div 
+          <div
             className="bg-[#D9F9FF] p-4 sm:p-6 rounded-[20px] shadow cursor-pointer hover:bg-[#C5EEFF] transition-colors"
             onClick={() => setIsFAQModalOpen(true)}
           >
@@ -99,7 +107,9 @@ const DashboardMahasiswa = () => {
                 />
               </svg>
             </h3>
-            <p className="text-[#C5C5C5] mt-1 text-sm sm:text-base">Apakah Anda butuh bantuan?</p>
+            <p className="text-[#C5C5C5] mt-1 text-sm sm:text-base">
+              Apakah Anda butuh bantuan?
+            </p>
           </div>
         </div>
 
@@ -131,7 +141,7 @@ const DashboardMahasiswa = () => {
               {timelinePoints.map(({ day, isActive }, index) => (
                 <div key={index} className="flex flex-col items-center">
                   <div
-                    className={`w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center z-10 text-xs sm:text-base ${
+                    className={`w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-base ${
                       isActive
                         ? "bg-[#FFBF5F] text-white shadow-md"
                         : "bg-gray-200 text-gray-500"

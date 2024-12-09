@@ -75,13 +75,9 @@ const Dashboard = () => {
   }, []);
 
   // Function to get initials from the student's name
-  const getInitials = (namamahasiswa: string) => {
-    const nameParts = namamahasiswa.split(" "); // Split name by spaces
-    const initials = nameParts
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase()) // Get first letter and convert to uppercase
-      .join(""); // Join initials
-    return initials;
+  const getInitials = (name: string) => {
+    const words = name.split(" "); // Memisahkan nama berdasarkan spasi
+    return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
   };
 
   return (

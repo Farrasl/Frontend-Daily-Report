@@ -1,30 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IDailyReport, IDokumentasi } from "@/models/DailyReport";
+import { IEvaluasiDailyReport } from "@/models/Evaluasi";
 import AddAgendaModal from "../../components/mahasiswa/AddAgendaModal";
 import Image from "next/image";
-
-interface IDokumentasi {
-  dailyreportId?: string;
-  filePath: string;
-  fileType: string;
-  data?: string; // Base64 encoded
-}
-
-interface IAgenda {
-  waktuMulai: string;
-  waktuSelesai: string;
-  judulAgenda: string;
-  deskripsiAgenda: string;
-  dokumentasi?: IDokumentasi[];
-}
-
-interface IDailyReport {
-  _id: string;
-  tanggal: string;
-  status: string;
-  agenda: IAgenda[];
-}
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -44,43 +24,62 @@ const formatDate = (dateString: string) => {
 
 const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
   const [dokumentasiList, setDokumentasiList] = useState<IDokumentasi[]>([]);
+  const [evaluasi, setEvaluasi] = useState<IEvaluasiDailyReport | null>(null);
+  const [evaluasiStatus, setEvaluasiStatus] = useState<string>("Belum");
   const [showAddAgendaModal, setShowAddAgendaModal] = useState(false);
 
-  // Fungsi untuk mengambil dokumentasi
-  const fetchDokumentasi = async () => {
+  const fetchEvaluasi = async () => {
     if (!dailyReport?._id) return;
 
     try {
-      const response = await fetch(`/api/dokumentasi/${dailyReport._id}`);
+      const response = await fetch(`/api/evaluasi?dailyreportId=${dailyReport._id}`);
 
       if (!response.ok) {
-        throw new Error("Gagal mengambil dokumentasi");
+        throw new Error("Gagal mengambil evaluasi");
       }
 
       const data = await response.json();
-      setDokumentasiList(data);
+      
+      // Filter evaluasi berdasarkan dailyreportId yang sesuai
+      const matchingEvaluasi = data.find(
+        (evaluasi: IEvaluasiDailyReport) => 
+          evaluasi.dailyreportId?.toString() === dailyReport._id.toString()
+      );
+
+      setEvaluasi(matchingEvaluasi || null);
+      
+      // Logika penentuan status
+      const status = matchingEvaluasi?.status?.trim().toLowerCase();
+      if (!status || status === '' || status === 'belum') {
+        setEvaluasiStatus("Belum");
+      } else {
+        setEvaluasiStatus(matchingEvaluasi.status);
+      }
     } catch (error) {
-      console.error("Error fetching dokumentasi:", error);
+      console.error("Error fetching evaluasi:", error);
+      // Set status default ke Belum jika terjadi error
+      setEvaluasiStatus("Belum");
     }
   };
 
-  // Efek untuk mengambil dokumentasi saat modal terbuka
+  // Efek untuk mengambil dokumentasi dan evaluasi saat modal terbuka
   useEffect(() => {
     if (isOpen) {
-      fetchDokumentasi();
+      fetchEvaluasi();
     }
   }, [isOpen, dailyReport?._id]);
 
   // Check if dailyReport exists before proceeding
   if (!isOpen || !dailyReport) return null;
 
-  const { tanggal, status, agenda } = dailyReport;
+  const { tanggal, agenda } = dailyReport;
+  const { komentar } = evaluasi || {};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl relative shadow-lg max-h-[90vh] overflow-auto">
         {/* Header Section - Fixed */}
-        <div className="p-4 sm:p-6 border-b relative sticky top-0 bg-white z-10">
+        <div className="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
@@ -106,7 +105,7 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
             </h2>
             <div
               className={`${
-                status === "Sudah" ? "bg-[#FFCC00]" : "bg-[#99CC33]"
+                evaluasiStatus === "Diterima" ? "bg-[#FFCC00]" : "bg-[#99CC33]"
               } p-4 rounded-lg flex justify-between items-center text-xs sm:text-sm mr-6`}
             >
               <p className="mr-4">
@@ -153,10 +152,10 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        status === "Sudah" ? "bg-green-500" : "bg-red-500"
+                        evaluasiStatus === "Diterima" ? "bg-green-500" : "bg-red-500"
                       }`}
                     ></div>
-                    <p className="font-medium text-sm">{status}</p>
+                    <p className="font-medium text-sm">{evaluasiStatus}</p>
                   </div>
                 </div>
 
@@ -232,11 +231,11 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
 
               {agenda && agenda.length > 0 ? (
                 agenda.map((ag, index) => (
-                  <div key={index} className="mb-4">
+                  <div key={index} className="mb-4 font-serif">
                     {/* Tampilkan tanggal hanya pada agenda pertama */}
                     {index === 0 && (
                       <p className="font-semibold mb-2 text-sm">
-                        {formatDate(tanggal)}
+                        {formatDate(tanggal.toString())}
                       </p>
                     )}
                     <p className="font-semibold mb-2 text-sm">
@@ -256,13 +255,14 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
             </div>
 
             {/* Evaluasi Agenda Section */}
-            <div className="bg-white border border-[#9FD8E4] p-4 rounded-lg">
+            <div className="flex justify-between items-start -mb-4">
               <h3 className="text-xs sm:text-sm text-gray-500">
                 Evaluasi Agenda
               </h3>
-              <p className="text-gray-700 text-xs sm:text-sm mt-2">
-                Saat design UI/UX kedepannya bisa pakai figma saja, untuk Abmi
-                terus berlatih untuk lebih baik kedepannya ya.
+            </div>
+            <div className="bg-white border-4 border-[#9FD8E4] p-4 rounded-lg">
+              <p className="text-gray-700 text-xs sm:text-sm mt-2 font-serif">
+                {komentar ? komentar : <span className="text-gray-500">Belum ada Evaluasi</span>}
               </p>
             </div>
           </div>

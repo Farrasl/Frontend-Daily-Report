@@ -1,4 +1,5 @@
 "use client";
+
 interface AddBimbinganModalProps {
   date: string;
   evaluation: string;
@@ -44,7 +45,7 @@ const AddBimbinganModal = ({
               value={evaluation}
               onChange={(e) => setEvaluation(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
+              placeholder="Masukkan evaluasi"
             />
           </div>
           <div className="flex justify-end gap-4">

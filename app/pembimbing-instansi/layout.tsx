@@ -3,23 +3,24 @@
 import Link from "next/link";
 import { useState } from "react";
 
-
+interface ProfilPembimbingInstansi {
+  name: string;
+}
 export default function RootLayout({
   children,
-  Name = "Sarinah, M.Pd",
 }: Readonly<{
   children: React.ReactNode;
-  Name: string;
 }>) {
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
-  const getInitials = (name: string) => {
-    const nameParts = name.split(" "); // Memisahkan nama berdasarkan spasi
-    const initials = nameParts
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase()) // Ambil huruf pertama dan ubah jadi kapital
-      .join(""); // Gabungkan inisial
-    return initials;
+
+  const profilPembimbingInstansi: ProfilPembimbingInstansi = {
+    name: "Sarinah, M. Pd.",
   };
+  const getInitials = (name: string) => {
+    const words = name.split(" "); // Memisahkan nama berdasarkan spasi
+    return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
+  };
+
   const menuItems = [
     {
       href: "/pembimbing-instansi",
@@ -222,10 +223,10 @@ export default function RootLayout({
             <div className="relative w-[150px] h-[150px] mb-5">
               {/* Display Initials */}
               <div className="flex items-center justify-center w-[150px] h-[150px] bg-[#9FD8E4] rounded-full text-white text-4xl font-semibold">
-                {getInitials(Name)}
+                {getInitials(profilPembimbingInstansi.name)}
               </div>
             </div>
-            <h3 className="font-bold text-lg">{Name}</h3>
+            <h3 className="font-bold text-lg">{profilPembimbingInstansi.name}</h3>
             <br />
             <p className="text-[#C5C5C5] text-sm">Pembimbing Instansi</p>
             <p className="text-[#C5C5C5] text-sm">

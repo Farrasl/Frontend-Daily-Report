@@ -80,9 +80,14 @@ const DaftarMahasiswa = () => {
     setSearchQuery(e.target.value);
   };
 
+  const getInitials = (name: string) => {
+    const words = name.split(" "); // Memisahkan nama berdasarkan spasi
+    return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
+  };
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-center sm:text-left mb-4 sm:mb-0 lg:mr-[300px] md:mr-[100px]">
           Daftar Nama Bimbingan Kerja Praktik
         </h2>
@@ -94,7 +99,7 @@ const DaftarMahasiswa = () => {
             onChange={handleSearchChange}
             className="px-4 py-2 pl-10 text-gray-700 bg-[#D9D9D9] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {/* Search icon */} 
+          {/* Search icon */}
           <svg
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
             width="24"
@@ -120,11 +125,9 @@ const DaftarMahasiswa = () => {
                 onClick={() => handleCardClick(student.name)}
                 className="flex items-center bg-[#D9F9FF] p-6 rounded-[20px] shadow relative cursor-pointer hover:bg-[#C5F2FF] transition-colors lg:min-w-[450px] flex-grow"
               >
-                <img
-                  src={student.imgSrc}
-                  alt={student.name}
-                  className="w-20 h-20 rounded-full mr-6"
-                />
+                <div className="flex items-center justify-center w-[75px] h-[75px] bg-[#9FD8E4] rounded-full text-white text-2xl font-semibold mr-3">
+                  {getInitials(student.name)}
+                </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-1">{student.name}</h3>
                   <p className="text-gray-600 mb-1">

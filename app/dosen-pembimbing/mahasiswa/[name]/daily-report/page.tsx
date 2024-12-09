@@ -1,36 +1,16 @@
 "use client";
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState } from "react";
+import { Mail, User, FileText } from 'lucide-react';
+import { IDailyReport } from "@/models/DailyReport";
+import { IEvaluasiDailyReport } from "@/models/Evaluasi";
 import ReviewModal from "../../../../../components/pembimbing-instansi/ReviewModal";
 
-
-// Interface for the API data
-interface IDokumentasi {
-  dailyreportId?: string;
-  filePath: string;
-  fileType: string;
-}
-
-interface IDailyReport {
-  agenda: any;
-  _id: string;
-  tanggal: string;
-  waktuMulai: string;
-  waktuSelesai: string;
-  judulAgenda: string;
-  deskripsiAgenda: string;
-  status: string;
-  dokumentasi?: IDokumentasi[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 // Interface matching ReviewModal's expected format
-interface Task {
+interface ITask {
   task: string;
   date: string;
   status: string;
-  uniqueKey: string; // Added unique key
 }
 const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
   const { name } = use(params);
@@ -41,6 +21,12 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
   const [apiData, setApiData] = useState<IDailyReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [evaluasiData, setEvaluasiData] = useState<IEvaluasiDailyReport[]>([]);
+
+  const getInitials = (name: string) => {
+    const words = name.split(" "); // Memisahkan nama berdasarkan spasi
+    return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
+  };
 
   const profileData = {
     nim: "12250120341",
@@ -50,39 +36,63 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
     email: "abmisukma.e@gmail.com",
   };
 
-  const convertToTasks = (dailyReports: IDailyReport[]): Task[] => {
-    return dailyReports.map((report, index) => {
-      const firstAgenda = report.agenda && report.agenda.length > 0 ? report.agenda[0] : null;
+
+  const convertToTasks = (
+    dailyReports: IDailyReport[], 
+    evaluasiData: IEvaluasiDailyReport[]
+  ): ITask[] => {
+    return dailyReports.map((report) => {
+      // Find matching evaluasi for this daily report
+      const matchingEvaluasi = evaluasiData.find(
+        (evaluasi) => 
+          evaluasi.dailyreportId?.toString() === report._id?.toString()
+      );
+
+      const firstAgenda =
+        report.agenda && report.agenda.length > 0 ? report.agenda[0] : null;
+      
+      // Determine status, default to "Belum" if no evaluasi found
+      const status = matchingEvaluasi?.status?.trim() || "Belum";
+      const normalizedStatus = 
+        !status || status === '' || status.toLowerCase() === 'belum' ? "Belum" : status;
+
       return {
         task: firstAgenda ? firstAgenda.judulAgenda : "No Agenda",
-        date: formatDate(report.tanggal),
-        status: report.status,
-        uniqueKey: `${report._id}-${index}` // Create a unique key by combining ID and index
+        date: formatDate(report.tanggal.toString()),
+        status: normalizedStatus,
       };
     });
   };
 
-  // Fetch tasks from API
+  // Fetch tasks and evaluasi from API
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/daily-report");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tasks");
+        // Fetch daily reports
+        const dailyReportResponse = await fetch("/api/daily-report");
+        if (!dailyReportResponse.ok) {
+          throw new Error("Failed to fetch daily reports");
         }
-        const data = await response.json();
-        console.log("Data fetched from API:", data); // Cek data yang diterima
-        setApiData(data);
+        const dailyReports = await dailyReportResponse.json();
+        setApiData(dailyReports);
+
+        // Fetch evaluasi
+        const evaluasiResponse = await fetch("/api/evaluasi");
+        if (!evaluasiResponse.ok) {
+          throw new Error("Failed to fetch evaluasi");
+        }
+        const evaluasi = await evaluasiResponse.json();
+        setEvaluasiData(evaluasi);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setIsLoading(false);
       }
     };
-  
-    fetchTasks();
+
+    fetchData();
   }, []);
-  
+
   const handleRowClick = (taskIndex: number) => {
     setSelectedTaskIndex(taskIndex);
     setTimeout(() => {
@@ -123,111 +133,116 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
   }
 
   // Convert API data to Task format for the table and modal
-  const tasks = convertToTasks(apiData);
+  const tasks = convertToTasks(apiData, evaluasiData);
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-center text-xl font-bold mb-8 px-4">
-        "PERANCANGAN SISTEM INFORMASI PEMANTAUAN PERKEMBANGAN STATUS PERBAIKAN
-        KOMPUTER BERBASIS WEB DI PT. PERTAMINA"
-      </h1>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+      {/* Title */}
+      <div className="bg-gradient-to-r from-cyan-100 to-blue-100 p-4">
+          <h1 className="text-center text-sm sm:text-base lg:text-lg font-bold text-gray-800">
+            PERANCANGAN SISTEM INFORMASI PEMANTAUAN PERKEMBANGAN STATUS
+            PERBAIKAN KOMPUTER BERBASIS WEB DI PT. PERTAMINA
+          </h1>
+        </div>
 
-      {/* Profile Section */}
-      <div className="mb-12">
-        <h2 className="text-xl font-semibold mb-2 align-center">Profile</h2>
-        <div className="flex flex-col md:flex-row items-start gap-8">
-          {/* Profile Image */}
-          <div className="w-48 h-48 relative rounded-full overflow-hidden border-4 border-[#A2E2E8]">
-            <img
-              src="/avatar.png"
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
 
-          {/* Profile Details */}
-          <div className="flex-1 space-y-4">
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-              <div>
-                <p className="text-gray-500">NAMA MAHASISWA</p>
-                <p className="font-medium">{profileData.nama}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">DOSEN PEMBIMBING</p>
-                <p className="font-medium">{profileData.dosenPembimbing}</p>
+        {/* Profile Card */}
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            {/* Avatar */}
+            <div className="relative">
+            <div className="w-40 h-40 sm:w-50 sm:h-50 rounded-full border-4 border-[#A2E2E8] bg-[#9FD8E4] flex items-center justify-center">
+                <span className="text-3xl sm:text-4xl font-bold text-white">
+                  {getInitials(profileData.nama)}
+                </span>
               </div>
             </div>
 
-            {/* Supervisors Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-              <div>
-                <p className="text-gray-500">NIM</p>
-                <p className="font-medium">{profileData.nim}</p>
+            {/* Profile Details */}
+            <div className="flex-1 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3">
+                  <User className="text-cyan-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nama Mahasiswa</p>
+                    <p className="font-semibold text-gray-800">{profileData.nama}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <FileText className="text-cyan-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">NIM</p>
+                    <p className="font-semibold text-gray-800">{profileData.nim}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <User className="text-cyan-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Dosen Pembimbing</p>
+                    <p className="font-semibold text-gray-800">{profileData.dosenPembimbing}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <User className="text-cyan-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Pembimbing Instansi</p>
+                    <p className="font-semibold text-gray-800">{profileData.pembimbingInstansi}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 md:col-span-2">
+                  <Mail className="text-cyan-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="font-semibold text-gray-800">{profileData.email}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-500">PEMBIMBING INSTANSI</p>
-                <p className="font-medium">{profileData.pembimbingInstansi}</p>
-              </div>
-            </div>
-
-            {/* Email Info */}
-            <div>
-              <p className="text-gray-500">Email</p>
-              <p className="font-medium">{profileData.email}</p>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6">
-        <h1 className="text-2xl font-bold mb-4">Laporan Harian</h1>
-        <div className="bg-[#D9F9FF] rounded-[20px] overflow-hidden max-h-60 overflow-y-auto">
-          <div className="bg-[#D9F9FF] rounded-lg overflow-hidden">
-            <table className="w-full text-left table-fixed">
-              <thead>
-                <tr className="bg-[#D9F9FF]">
-                  <th className="w-1/2 py-4 px-4 sm:px-6 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
-                    All Task
-                  </th>
-                  <th className="w-1/4 py-4 px-4 sm:px-6 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
-                    Date
-                  </th>
-                  <th className="w-1/4 py-4 px-4 sm:px-12 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {tasks.map((task, index) => (
-                  <tr
-                    key={task.uniqueKey} // Use the new unique key
-                    onClick={() => handleRowClick(index)}
-                    className="hover:bg-[#A1D1DD] transition-colors duration-150 cursor-pointer"
-                  >
-                    <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-900">
-                      {task.task}
-                    </td> 
-                    <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-600">
-                      {task.date}
-                    </td>
-                    <td className="py-4 px-4 sm:px-12">
-                      <span
-                        className={`inline-block px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium ${
-                          task.status === "Sudah"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {task.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+
+      {/* Daily Report Section */}
+      <div className="mt-6 px-6 pb-8">
+  <h2 className="text-xl font-bold mb-4">Laporan Harian</h2>
+  <div className="bg-[#D9F9FF] rounded-xl shadow-md overflow-hidden">
+    <table className="w-full text-left">
+      <thead className="bg-[#F0F9FF] border-b">
+        <tr>
+          <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Agenda</th>
+          <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+          <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tasks.map((task, index) => (
+          <tr
+            key={index}
+            onClick={() => handleRowClick(index)}
+            className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer group"
+          >
+            <td className="py-4 px-4 text-sm text-gray-800">
+              {task.task}
+            </td>
+            <td className="py-4 px-4 text-sm text-gray-600">
+              {task.date}
+            </td>
+            <td className="py-4 px-4">
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                task.status === "Diterima"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}>
+                {task.status}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
       </div>
       {/* Review Modal */}
       {selectedTaskIndex !== null && (

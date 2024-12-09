@@ -1,27 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
-import AddTaskModal from "../../components/mahasiswa/AddTaskModal";
+import AddTaskModal from "@/components/mahasiswa/AddTaskModal";
+
+interface ProfilMahasiswa {
+  name: string;
+  progress: number;
+}
+
+interface ProfilPembimbingInstansi {
+  name: string;
+}
+
+interface ProfilDosenPembimbing {
+  name: string;
+}
 
 export default function RootLayout({
   children,
-  Name = "Abmi Sukma",
 }: Readonly<{
   children: React.ReactNode;
-  Name: string;
 }>) {
-  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
-  const getInitials = (name: string) => {
-    const nameParts = name.split(" "); // Memisahkan nama berdasarkan spasi
-    const initials = nameParts
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase()) // Ambil huruf pertama dan ubah jadi kapital
-      .join(""); // Gabungkan inisial
-    return initials;
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+
+  const profilMahasiswa: ProfilMahasiswa = {
+    name: "Abmi Sukma",
+    progress: 75,
   };
+
+  const profilPembimbingInstansi: ProfilPembimbingInstansi = {
+    name: "Sarinah, M. Pd.",
+  };
+
+  const profilDosenPembimbing: ProfilDosenPembimbing = {
+    name: "Muhammad Irsyad, M.T.",
+  };
+
+  const getInitials = (name: string) => {
+    const words = name.split(" "); // Memisahkan nama berdasarkan spasi
+    return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
+  };
+
   const menuItems = [
     {
       href: "/mahasiswa",
@@ -131,195 +152,198 @@ export default function RootLayout({
   ];
 
   return (
-    <main>
-      <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen overflow-hidden">
-        {/* Mobile Burger Menu */}
-        <div className="lg:hidden w-full bg-[#9FD8E4] p-3 relative">
-          <button
-            onClick={() => setIsBurgerOpen(!isBurgerOpen)}
-            className="p-2 hover:bg-[#FFBF5F] rounded-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className={`transform transition-transform duration-300 ${
-                isBurgerOpen ? "rotate-90" : ""
-              }`}
-            >
-              <path
-                d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z"
-                fill="#323232"
-              />
-            </svg>
-            <span className="font-medium text-gray-800">Menu</span>
-          </button>
+    <div className="flex flex-col lg:flex-row items-center justify-between w-full min-h-screen overflow-hidden">
+      {/* Overlay for dark background when mobile menu is open */}
+      {isBurgerOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-10"
+          onClick={() => setIsBurgerOpen(false)}
+        />
+      )}
 
-          {/* Mobile Menu Items */}
-          <div
-            className={`absolute w-full left-0 bg-white shadow-lg rounded-b-2xl transform transition-all duration-300 ease-in-out z-50 ${
-              isBurgerOpen
-                ? "translate-y-0 opacity-100 visible"
-                : "-translate-y-4 opacity-0 invisible"
+      {/* Mobile Burger Menu */}
+      <div className="lg:hidden w-full bg-[#9FD8E4] p-3 fixed z-20">
+        <button
+          onClick={() => setIsBurgerOpen(!isBurgerOpen)}
+          className="p-2 hover:bg-[#FFBF5F] rounded-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`transform transition-transform duration-300 ${
+              isBurgerOpen ? "rotate-90" : ""
             }`}
           >
-            <div className="p-4">
-              <ul className="space-y-2">
-                {menuItems.map((item, index) => (
-                  <li
-                    key={index}
-                    className="transform transition-all duration-300 hover:translate-x-2"
+            <path
+              d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z"
+              fill="#323232"
+            />
+          </svg>
+          <span className="font-medium text-gray-800">Reportify KP</span>
+        </button>
+
+        {/* Mobile Menu Items */}
+        <div
+          className={`absolute w-[96%] top-16 bg-white shadow-lg rounded-lg transform transition-all duration-300 ease-in-out ${
+            isBurgerOpen
+              ? "translate-y-4 opacity-100 visible"
+              : "-translate-y-4 opacity-0 invisible"
+          }`}
+        >
+          <div className="p-4">
+            <ul className="space-y-2">
+              {menuItems.map((item, index) => (
+                <li
+                  key={index}
+                  className="transform transition-all duration-300 hover:translate-x-2"
+                >
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-[#9FD8E4] group transition-all duration-300"
+                    onClick={() => setIsBurgerOpen(false)}
                   >
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-[#9FD8E4] group transition-all duration-300"
-                      onClick={() => setIsBurgerOpen(false)}
-                    >
-                      <div className="w-12 h-12 flex items-center justify-center rounded-full  transition-all duration-300">
-                        {item.icon}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-lg font-semibold text-gray-800 group-hover:text-[#2C707B]">
-                          {item.label}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {index === 0 && "Lihat statistik dan progress"}
-                          {index === 1 && "Kelola laporan harian"}
-                          {index === 2 && "Jadwal bimbingan"}
-                          {index === 3 && "Keluar dari aplikasi"}
-                        </span>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:flex lg:flex-col gap-5 w-full lg:w-[80px] h-auto lg:h-[96vh] lg:ml-[22px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
-          <div className="nav mt-[200px] flex-1">
-            <div className="menu">
-              <ul className="flex flex-col gap-5">
-                {menuItems.slice(0, -1).map((item, index) => (
-                  <li key={index} className="relative group">
-                    <Link
-                      href={item.href}
-                      className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
-                    >
+                    <div className="w-12 h-12 flex items-center justify-center rounded-full  transition-all duration-300">
                       {item.icon}
-                      <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-gray-800 group-hover:text-[#2C707B]">
                         {item.label}
                       </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      <span className="text-sm text-gray-500">
+                        {index === 0 && "Lihat statistik dan progress"}
+                        {index === 1 && "Kelola laporan harian"}
+                        {index === 2 && "Jadwal bimbingan"}
+                        {index === 3 && "Keluar dari aplikasi"}
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
+        </div>
+      </div>
 
-          {/* Logout Button */}
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex lg:flex-col gap-5 w-full lg:w-[80px] h-auto lg:h-[96vh] lg:ml-[22px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
+        <div className="nav mt-[200px] flex-1">
           <div className="menu">
-            <ul>
-              <li className="relative group">
-                <Link
-                  href="/"
-                  className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
-                >
-                  {menuItems[menuItems.length - 1].icon}
-                  <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
-                    Keluar
-                  </span>
-                </Link>
-              </li>
+            <ul className="flex flex-col gap-5">
+              {menuItems.slice(0, -1).map((item, index) => (
+                <li key={index} className="relative group">
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
+                  >
+                    {item.icon}
+                    <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
+                      {item.label}
+                    </span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        {children}
-
-        {/* Profile Section */}
-        <div className="w-full lg:w-[300px] h-auto lg:h-screen p-5 bg-[#F6F6F6] text-center mt-2 lg:mt-0 overflow-hidden">
-          <div className="flex flex-col items-center relative">
-            <h3 className="text-lg text-left w-full">
-              <b>Profile</b>
-            </h3>
-            <div className="mt-3 mb-3">
-              <div className="flex items-center justify-center w-[120px] h-[120px] lg:w-[150px] lg:h-[150px] rounded-full bg-[#9FD8E4] text-white font-bold text-4xl">
-                {getInitials(Name)}
-              </div>
-            </div>
-            <h3 className="font-bold text-lg">{Name}</h3>
-            <p className="text-[#C5C5C5] text-sm mt-2">12250111512</p>
-            <p className="text-[#C5C5C5] text-sm">PT Pertamina</p>
-          </div>
-
-          {/* Supervisor Section */}
-          <div className="text-left">
-            <h3 className="text-lg mt-5 mb-1">
-              <b>Supervisor</b>
-            </h3>
-            <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
-              <Image
-                src="/avatar.png"
-                alt="Supervisor 1"
-                className="rounded-full mr-2"
-                width={50}
-                height={50}
-              />
-              <div className="supervisor-info">
-                <h4 className="font-bold text-sm">Pizaini</h4>
-                <p className="text-xs">Dosen Pembimbing</p>
-              </div>
-            </div>
-            <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
-              <Image
-                src="/avatar.png"
-                alt="Supervisor 2"
-                className="rounded-full mr-2"
-                width={50}
-                height={50}
-              />
-              <div className="supervisor-info">
-                <h4 className="font-bold text-sm">Yelfi Fitriani</h4>
-                <p className="text-xs">Pembimbing Instansi</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Report Button with Modal */}
-          <div className="report-section mt-20 mb-5 text-left">
-            <h3 className="text-lg mb-1">
-              <b>Buat Laporan</b>
-            </h3>
-            <div
-              className="bg-[#2C707B] text-white flex rounded-md p-6 cursor-pointer"
-              onClick={() => setIsAddTaskModalOpen(true)}
-            >
-              <svg
-                width="25"
-                height="25"
-                viewBox="0 0 25 25"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+        {/* Logout Button */}
+        <div className="menu">
+          <ul>
+            <li className="relative group">
+              <Link
+                href="/"
+                className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
               >
-                <rect width="25" height="25" rx="5" fill="#FFBF5F" />
-                <path
-                  d="M17 13.7143H12.7143V18H11.2857V13.7143H7V12.2857H11.2857V8H12.7143V12.2857H17V13.7143Z"
-                  fill="#323232"
-                />
-              </svg>
-              <span className="ml-2">Tambah Laporan</span>
-            </div>
-            <AddTaskModal
-              isOpen={isAddTaskModalOpen}
-              onClose={() => setIsAddTaskModalOpen(false)}
-            />
-          </div>
+                {menuItems[menuItems.length - 1].icon}
+                <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">
+                  Keluar
+                </span>
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
-    </main>
+
+      {children}
+
+      {/* Profile Section */}
+      <div className="w-full lg:w-[300px] h-auto lg:h-screen p-5 bg-[#F6F6F6] text-center mt-2 lg:mt-0 overflow-hidden">
+        <div className="flex flex-col items-center relative">
+          <h3 className="text-lg text-left w-full">
+            <b>Profile</b>
+          </h3>
+          <div className="mt-3 mb-3">
+            <div className="flex items-center justify-center w-[120px] h-[120px] lg:w-[150px] lg:h-[150px] rounded-full bg-[#9FD8E4] text-white font-bold text-4xl">
+              {getInitials(profilMahasiswa.name)}
+            </div>
+          </div>
+          <h3 className="font-bold text-lg">{profilMahasiswa.name}</h3>
+          <p className="text-[#C5C5C5] text-sm mt-2">12250111512</p>
+          <p className="text-[#C5C5C5] text-sm">PT Pertamina</p>
+        </div>
+
+        {/* Supervisor Section */}
+        <div className="text-left">
+          <h3 className="text-lg mt-5 mb-1">
+            <b>Supervisor</b>
+          </h3>
+          <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
+            <div className="flex items-center justify-center w-[45px] h-[45px] lg:w-[55px] lg:h-[55px] rounded-full bg-[#9FD8E4] text-white mr-3 font-bold text-md">
+              {getInitials(profilDosenPembimbing.name)}
+            </div>
+            <div className="supervisor-info">
+              <h4 className="font-bold text-sm">
+                {profilDosenPembimbing.name}
+              </h4>
+              <p className="text-xs">Dosen Pembimbing</p>
+            </div>
+          </div>
+          <div className="flex items-center bg-[#FFBF5F] rounded-[10px] p-3 mb-2">
+            <div className="flex items-center justify-center w-[45px] h-[45px] lg:w-[55px] lg:h-[55px] rounded-full bg-[#9FD8E4] text-white mr-3 font-bold text-md">
+              {getInitials(profilPembimbingInstansi.name)}
+            </div>
+            <div className="supervisor-info">
+              <h4 className="font-bold text-sm">
+                {profilPembimbingInstansi.name}
+              </h4>
+              <p className="text-xs">Pembimbing Instansi</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Report Button with Modal */}
+        <div className="report-section mt-20 mb-5 text-left">
+          <h3 className="text-lg mb-1">
+            <b>Buat Laporan</b>
+          </h3>
+          <div
+            className="bg-[#2C707B] text-white flex rounded-md p-6 cursor-pointer"
+            onClick={() => setIsAddTaskModalOpen(true)}
+          >
+            <svg
+              width="25"
+              height="25"
+              viewBox="0 0 25 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="25" height="25" rx="5" fill="#FFBF5F" />
+              <path
+                d="M17 13.7143H12.7143V18H11.2857V13.7143H7V12.2857H11.2857V8H12.7143V12.2857H17V13.7143Z"
+                fill="#323232"
+              />
+            </svg>
+            <span className="ml-2">Tambah Laporan</span>
+          </div>
+          <AddTaskModal
+            isOpen={isAddTaskModalOpen}
+            onClose={() => setIsAddTaskModalOpen(false)}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

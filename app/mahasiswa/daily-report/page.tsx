@@ -1,38 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IDailyReport } from "@/models/DailyReport";
+import { IEvaluasiDailyReport } from "@/models/Evaluasi";
 import ReviewModal from "@/components/mahasiswa/ReviewModal";
 
-// Interface for the API data
-interface IDokumentasi {
-  dailyreportId?: string;
-  filePath: string;
-  fileType: string;
-}
-
-interface IDailyReport {
-  agenda: any;
-  _id: string;
-  tanggal: string;
-  waktuMulai: string;
-  waktuSelesai: string;
-  judulAgenda: string;
-  deskripsiAgenda: string;
-  status: string;
-  dokumentasi?: IDokumentasi[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 // Interface matching ReviewModal's expected format
-interface Task {
+interface ITask {
   task: string;
   date: string;
   status: string;
-  uniqueKey: string; // Added unique key
 }
 
-const DailyReport = () => {
+const DailyReportPage = () => {
   const [currentDate, setCurrentDate] = useState("");
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState<number | null>(
@@ -41,52 +21,65 @@ const DailyReport = () => {
   const [apiData, setApiData] = useState<IDailyReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [evaluasiData, setEvaluasiData] = useState<IEvaluasiDailyReport[]>([]);
 
   // Convert API data to Task format with unique keys
-  const convertToTasks = (dailyReports: IDailyReport[]): Task[] => {
-    return dailyReports.map((report, index) => {
-      const firstAgenda = report.agenda && report.agenda.length > 0 ? report.agenda[0] : null;
+  const convertToTasks = (
+    dailyReports: IDailyReport[], 
+    evaluasiData: IEvaluasiDailyReport[]
+  ): ITask[] => {
+    return dailyReports.map((report) => {
+      // Find matching evaluasi for this daily report
+      const matchingEvaluasi = evaluasiData.find(
+        (evaluasi) => 
+          evaluasi.dailyreportId?.toString() === report._id?.toString()
+      );
+
+      const firstAgenda =
+        report.agenda && report.agenda.length > 0 ? report.agenda[0] : null;
+      
+      // Determine status, default to "Belum" if no evaluasi found
+      const status = matchingEvaluasi?.status?.trim() || "Belum";
+      const normalizedStatus = 
+        !status || status === '' || status.toLowerCase() === 'belum' ? "Belum" : status;
+
       return {
         task: firstAgenda ? firstAgenda.judulAgenda : "No Agenda",
-        date: formatDate(report.tanggal),
-        status: report.status,
-        uniqueKey: `${report._id}-${index}` // Create a unique key by combining ID and index
+        date: formatDate(report.tanggal.toString()),
+        status: normalizedStatus,
       };
     });
   };
 
+  // Fetch tasks and evaluasi from API
   useEffect(() => {
-    const today = new Date();
-    const options: any = {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-    setCurrentDate(today.toLocaleDateString("id-ID", options));
-  }, []);
-
-  // Fetch tasks from API
-  useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/daily-report");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tasks");
+        // Fetch daily reports
+        const dailyReportResponse = await fetch("/api/daily-report");
+        if (!dailyReportResponse.ok) {
+          throw new Error("Failed to fetch daily reports");
         }
-        const data = await response.json();
-        console.log("Data fetched from API:", data); // Cek data yang diterima
-        setApiData(data);
+        const dailyReports = await dailyReportResponse.json();
+        setApiData(dailyReports);
+
+        // Fetch evaluasi
+        const evaluasiResponse = await fetch("/api/evaluasi");
+        if (!evaluasiResponse.ok) {
+          throw new Error("Failed to fetch evaluasi");
+        }
+        const evaluasi = await evaluasiResponse.json();
+        setEvaluasiData(evaluasi);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setIsLoading(false);
       }
     };
-  
-    fetchTasks();
+
+    fetchData();
   }, []);
-  
+
   const handleRowClick = (taskIndex: number) => {
     setSelectedTaskIndex(taskIndex);
     setTimeout(() => {
@@ -127,7 +120,7 @@ const DailyReport = () => {
   }
 
   // Convert API data to Task format for the table and modal
-  const tasks = convertToTasks(apiData);
+  const tasks = convertToTasks(apiData, evaluasiData);
 
   return (
     <div className="flex-1 h-screen bg-white">
@@ -165,7 +158,11 @@ const DailyReport = () => {
             Cetak Daily Report
           </button>
         </div>
-        <div className="bg-[#D9F9FF] p-4 rounded-[20px] mb-8 h-[570px] overflow-y-auto">
+        <div
+          className={`${
+            tasks.length > 5 ? "h-[570px] overflow-y-auto" : "h-auto"
+          } bg-[#D9F9FF] p-4 rounded-[20px] mb-8`}
+        >
           <div className="bg-[#D9F9FF] rounded-lg overflow-hidden">
             <table className="w-full text-left table-fixed">
               <thead>
@@ -184,20 +181,20 @@ const DailyReport = () => {
               <tbody className="divide-y divide-gray-200">
                 {tasks.map((task, index) => (
                   <tr
-                    key={task.uniqueKey} // Use the new unique key
+                    key={index}
                     onClick={() => handleRowClick(index)}
                     className="hover:bg-[#A1D1DD] transition-colors duration-150 cursor-pointer"
                   >
                     <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-900">
                       {task.task}
-                    </td> 
+                    </td>
                     <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-600">
                       {task.date}
                     </td>
                     <td className="py-4 px-4 sm:px-12">
                       <span
                         className={`inline-block px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium ${
-                          task.status === "Sudah"
+                          task.status === "Diterima"
                             ? "bg-green-100 text-green-600"
                             : "bg-red-100 text-red-600"
                         }`}
@@ -224,4 +221,4 @@ const DailyReport = () => {
   );
 };
 
-export default DailyReport;
+export default DailyReportPage;

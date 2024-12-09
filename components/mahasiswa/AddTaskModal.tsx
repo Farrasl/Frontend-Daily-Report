@@ -15,7 +15,7 @@ interface DayInfo {
   isSelected: boolean;
 }
 
-interface TaskData {
+interface Agenda {
   waktuMulai: string;
   waktuSelesai: string;
   judulAgenda: string;
@@ -42,7 +42,7 @@ const MONTHS = [
 const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
-  const [taskData, setTaskData] = useState<TaskData>({
+  const [Agenda, setAgenda] = useState<Agenda>({
     waktuMulai: "",
     waktuSelesai: "",
     judulAgenda: "",
@@ -55,7 +55,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [agendaList, setAgendaList] = useState<TaskData[]>([]);
+  const [agendaList, setAgendaList] = useState<Agenda[]>([]);
 
   // Generate array of years (10 years before and after current year)
   const currentYear = new Date().getFullYear();
@@ -77,26 +77,26 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setTaskData((prev) => ({ ...prev, [name]: value }));
+    setAgenda((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleMonthChange = (monthIndex: number) => {
-    const newDate = new Date(taskData.date);
+    const newDate = new Date(Agenda.date);
     newDate.setMonth(monthIndex);
-    setTaskData((prev) => ({ ...prev, date: newDate }));
+    setAgenda((prev) => ({ ...prev, date: newDate }));
     setIsMonthDropdownOpen(false);
   };
 
   const handleYearChange = (year: number) => {
-    const newDate = new Date(taskData.date);
+    const newDate = new Date(Agenda.date);
     newDate.setFullYear(year);
-    setTaskData((prev) => ({ ...prev, date: newDate }));
+    setAgenda((prev) => ({ ...prev, date: newDate }));
     setIsYearDropdownOpen(false);
   };
 
   const generateDates = (): DayInfo[] => {
     const dates: DayInfo[] = [];
-    const startDate = new Date(taskData.date);
+    const startDate = new Date(Agenda.date);
     startDate.setDate(startDate.getDate() - 14);
 
     for (let i = 0; i < 29; i++) {
@@ -107,14 +107,14 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
         dayShort: formatDayName(date),
         dayNum: date.getDate(),
         isToday: isSameDay(date, new Date()),
-        isSelected: isSameDay(date, taskData.date),
+        isSelected: isSameDay(date, Agenda.date),
       });
     }
     return dates;
   };
 
   const handleDateClick = (date: Date) => {
-    setTaskData((prev) => ({ ...prev, date }));
+    setAgenda((prev) => ({ ...prev, date }));
   };
 
   const handleScroll = (direction: "left" | "right") => {
@@ -129,7 +129,27 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const newFiles = event.target.files ? Array.from(event.target.files) : [];
-    setTaskData((prev) => ({ ...prev, files: [...prev.files, ...newFiles] }));
+    
+    // Validasi tipe file
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    const maxFileSize = 5 * 1024 * 1024; // 5 MB
+  
+    const validFiles = newFiles.filter(file => {
+      const isValidType = allowedTypes.includes(file.type);
+      const isValidSize = file.size <= maxFileSize;
+      
+      if (!isValidType) {
+        alert(`Tipe file tidak valid: ${file.name}`);
+      }
+      
+      if (!isValidSize) {
+        alert(`Ukuran file terlalu besar: ${file.name}`);
+      }
+      
+      return isValidType && isValidSize;
+    });
+  
+    setAgenda((prev) => ({ ...prev, files: [...prev.files, ...validFiles] }));
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
@@ -139,7 +159,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
     const droppedFiles = event.dataTransfer.files
       ? Array.from(event.dataTransfer.files)
       : [];
-    setTaskData((prev) => ({
+    setAgenda((prev) => ({
       ...prev,
       files: [...prev.files, ...droppedFiles],
     }));
@@ -147,11 +167,11 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   const handleTambahAgenda = () => {
     // Validate fields
     if (
-      !taskData.waktuMulai ||
-      !taskData.waktuSelesai ||
-      !taskData.judulAgenda ||
-      !taskData.deskripsiAgenda ||
-      taskData.files.length === 0
+      !Agenda.waktuMulai ||
+      !Agenda.waktuSelesai ||
+      !Agenda.judulAgenda ||
+      !Agenda.deskripsiAgenda ||
+      Agenda.files.length === 0
     ) {
       alert("Semua field agenda harus diisi.");
       return;
@@ -159,13 +179,13 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   
     // Add the agenda to the list
     setAgendaList((prev) => {
-      const updatedAgendaList = [...prev, taskData];
+      const updatedAgendaList = [...prev, Agenda];
       console.log("Agenda list updated:", updatedAgendaList);  // Debugging line
       return updatedAgendaList;
     });
   
     // Reset agenda fields, but keep the date
-    setTaskData((prev) => ({
+    setAgenda((prev) => ({
       ...prev,
       waktuMulai: "",
       waktuSelesai: "",
@@ -176,22 +196,22 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
   };  
   
   const handleSubmit = async () => {
-    // Jika belum ada agenda dalam daftar, tambahkan taskData saat ini
+    // Jika belum ada agenda dalam daftar, tambahkan Agenda saat ini
     if (agendaList.length === 0) {
-      setAgendaList((prev) => [...prev, taskData]);
+      setAgendaList((prev) => [...prev, Agenda]);
     }
   
     // Pastikan ada agenda untuk disimpan
-    if (agendaList.length === 0 && !taskData.judulAgenda) {
+    if (agendaList.length === 0 && !Agenda.judulAgenda) {
       alert("Minimal tambahkan satu agenda.");
       return;
     }
   
     // Siapkan data yang akan dikirim
     const requestBody = {
-      tanggal: taskData.date.toISOString(),
+      tanggal: Agenda.date.toISOString(),
       status: "Belum",
-      agenda: [...agendaList, taskData].map((agenda) => ({
+      agenda: [...agendaList, Agenda].map((agenda) => ({
         waktuMulai: agenda.waktuMulai,
         waktuSelesai: agenda.waktuSelesai,
         judulAgenda: agenda.judulAgenda,
@@ -253,7 +273,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                     }}
                     className="flex items-center gap-1 py-1 px-2 hover:bg-gray-100 rounded-md text-sm font-medium"
                   >
-                    {formatMonthName(taskData.date)}
+                    {formatMonthName(Agenda.date)}
                     <svg
                       className={`w-4 h-4 transition-transform ${
                         isMonthDropdownOpen ? "rotate-180" : ""
@@ -279,7 +299,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                           onClick={() => handleMonthChange(index)}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100
                             ${
-                              taskData.date.getMonth() === index
+                              Agenda.date.getMonth() === index
                                 ? "bg-gray-50 font-medium"
                                 : ""
                             }`}
@@ -300,7 +320,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                     }}
                     className="flex items-center gap-1 py-1 px-2 hover:bg-gray-100 rounded-md text-sm font-medium"
                   >
-                    {taskData.date.getFullYear()}
+                    {Agenda.date.getFullYear()}
                     <svg
                       className={`w-4 h-4 transition-transform ${
                         isYearDropdownOpen ? "rotate-180" : ""
@@ -326,7 +346,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                           onClick={() => handleYearChange(year)}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100
                             ${
-                              taskData.date.getFullYear() === year
+                              Agenda.date.getFullYear() === year
                                 ? "bg-gray-50 font-medium"
                                 : ""
                             }`}
@@ -424,7 +444,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                 id="waktuMulai"
                 name="waktuMulai"
                 type="time"
-                value={taskData.waktuMulai}
+                value={Agenda.waktuMulai}
                 onChange={handleInputChange}
                 className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
               />
@@ -440,7 +460,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                 id="waktuSelesai"
                 name="waktuSelesai"
                 type="time"
-                value={taskData.waktuSelesai}
+                value={Agenda.waktuSelesai}
                 onChange={handleInputChange}
                 className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
               />
@@ -483,13 +503,13 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                 </svg>
               </div>
               <p className="text-xs text-gray-500">
-                {taskData.files.length > 0
-                  ? `${taskData.files.length} file(s) selected`
+                {Agenda.files.length > 0
+                  ? `${Agenda.files.length} file(s) selected`
                   : "Select Files or Drag and Drop"}
               </p>
-              {taskData.files.length > 0 && (
+              {Agenda.files.length > 0 && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {taskData.files.map(
+                  {Agenda.files.map(
                     (file, index) =>
                       file.type.startsWith("image/") && (
                         <div
@@ -508,7 +528,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation(); // Prevents triggering the file input click
-                              setTaskData((prev) => ({
+                              setAgenda((prev) => ({
                                 ...prev,
                                 files: prev.files.filter((_, i) => i !== index),
                               }));
@@ -537,7 +557,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
               id="judulAgenda"
               name="judulAgenda"
               type="text"
-              value={taskData.judulAgenda}
+              value={Agenda.judulAgenda}
               onChange={handleInputChange}
               placeholder="Masukkan judul agenda"
               className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
@@ -555,7 +575,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             <textarea
               id="deskripsiAgenda"
               name="deskripsiAgenda"
-              value={taskData.deskripsiAgenda}
+              value={Agenda.deskripsiAgenda}
               onChange={handleInputChange}
               placeholder="Masukkan deskripsi"
               rows={3}
@@ -589,7 +609,7 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              className="bg-[#52BD3A] text-white rounded-[20px] px-4 py-2 flex items-center gap-2"
+              className="bg-[#52BD3A] text-white rounded-[20px] px-4 py-2 flex items-center gap-2 hover:bg-gradient-to-b from-[#52BD3A] to-[#26571B]"
             >
               <svg
                 width="24"
