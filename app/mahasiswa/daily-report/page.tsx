@@ -160,7 +160,7 @@ const DailyReportPage = () => {
         </div>
         <div
           className={`${
-            tasks.length > 5 ? "h-[570px] overflow-y-auto" : "h-auto"
+            tasks.length > 5 ? "h-[590px] overflow-y-auto" : "h-auto"
           } bg-[#D9F9FF] p-4 rounded-[20px] mb-8`}
         >
           <div className="bg-[#D9F9FF] rounded-lg overflow-hidden">

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { User, Mail, FileText, Plus } from "lucide-react";
+import { IBimbingan } from "@/models/Bimbingan";
 import BimbinganKPModal from "../../../../../components/dosen-pembimbing/AddBimbinganModal";
 import BimbinganModal from "../../../../../components/mahasiswa/BimbinganModal";
 
@@ -13,26 +14,15 @@ interface ProfileData {
   email: string;
 }
 
-interface BimbinganHistoryItem {
-  tanggal: string;
-  status: string;
-  aksi: string;
-  evaluasi: string;
-  nim: string;
-  nama: string;
-  dosenPembimbing: string;
-  pembimbingInstansi: string;
-  statusPenerimaan: string;
-}
-
 const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
   const { name } = React.use(params);
 
   const [isBimbinganKPModalOpen, setIsBimbinganKPModalOpen] = useState(false);
   const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);
   const [date, setDate] = useState("");
+  const [data, setData] = useState([]);
   const [evaluation, setEvaluation] = useState("");
-  const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(null);
+  const [selectedData, setSelectedData] = useState<IBimbingan | null>(null);
 
   const profileData = {
     nim: "12250120341",
@@ -47,30 +37,33 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
     return words.length > 1 ? words[0][0] + words[1][0] : words[0][0];
   };
 
-  const BimbinganHistory: BimbinganHistoryItem[] = [
-    {
-      tanggal: "Sabtu, 29 Oktober 2024",
-      status: "done",
-      aksi: "Lihat",
-      evaluasi: "Kerja sama tim baik.",
-      nim: profileData.nim,
-      nama: profileData.nama,
-      dosenPembimbing: profileData.dosenPembimbing,
-      pembimbingInstansi: profileData.pembimbingInstansi,
-      statusPenerimaan: "Diterima",
-    },
-    {
-      tanggal: "Senin, 1 November 2024",
-      status: "pending",
-      aksi: "Lihat",
-      evaluasi: "Perlu peningkatan pada laporan.",
-      nim: profileData.nim,
-      nama: profileData.nama,
-      dosenPembimbing: profileData.dosenPembimbing,
-      pembimbingInstansi: profileData.pembimbingInstansi,
-      statusPenerimaan: "Menunggu",
-    },
-  ];
+  useEffect(() => {
+    const fetchBimbinganData = async () => {
+      try {
+        const response = await fetch("/api/bimbingan");
+        if (!response.ok) {
+          throw new Error("Failed to fetch bimbingan data");
+        }
+        const data = await response.json();
+        setData(data);
+      } catch (error) {
+        console.error("Error fetching bimbingan data:", error);
+      }
+    };
+    fetchBimbinganData();
+  }, []);
+  console.log(data);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+  
 
   const handleOpenBimbinganKPModal = () => {
     setIsBimbinganKPModalOpen(true);
@@ -80,7 +73,7 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
     setIsBimbinganKPModalOpen(false);
   };
 
-  const handleOpenBimbinganModal = (data: BimbinganHistoryItem) => {
+  const handleOpenBimbinganModal = (data: IBimbingan) => {
     setSelectedData(data);
     setIsBimbinganModalOpen(true);
   };
@@ -164,7 +157,7 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
         {/* Riwayat Bimbingan Section */}
         <div className="p-6 bg-white-50">
           <h2 className="text-xl font-bold text-center mb-4 text-gray-800">Riwayat Bimbingan</h2>
-          <div className="bg-[#D9F9FF] rounded-xl shadow-md overflow-hidden">
+          <div className="bg-[#D9F9FF] rounded-xl shadow-md overflow-hidden h-[175px] overflow-y-auto">
             <table className="w-full">
               <thead className="bg-[#F0F9FF]">
                 <tr>
@@ -173,19 +166,19 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
                 </tr>
               </thead>
               <tbody>
-                {BimbinganHistory.map((item, index) => (
+                {data.map((item: { tanggal: Date}, index) => (
                   <tr 
                     key={index} 
                     className="border-b border-gray-100  transition-colors"
                   >
-                    <td className="py-3 px-4 text-gray-700">{item.tanggal}</td>
+                    <td className="py-3 px-4 text-gray-700">{formatDate(item.tanggal.toString())}</td>
                     <td className="py-3 px-4 text-right">
                       <button
                         className="text-teal-600 hover:text-teal-800 font-medium 
                         px-3 py-1 rounded-full hover:bg-teal-50 transition-colors"
-                        onClick={() => handleOpenBimbinganModal(item)}
+                        onClick={() => handleOpenBimbinganModal(data[index])}
                       >
-                        {item.aksi}
+                      Lihat
                       </button>
                     </td>
                   </tr>
@@ -194,7 +187,7 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
             </table>
           </div>
           
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-4">
             <button
               className="flex items-center bg-teal-600 text-white 
               px-6 py-3 rounded-full shadow-lg hover:bg-teal-700 
@@ -219,15 +212,12 @@ const BimbinganKP = ({ params }: { params: Promise<{ name: string }> }) => {
 
       {isBimbinganKPModalOpen && (
         <BimbinganKPModal
-          date={date}
-          evaluation={evaluation}
-          setDate={setDate}
-          setEvaluation={setEvaluation}
-          handleSubmit={handleSubmit}
-          handleClose={handleCloseBimbinganKPModal}
+          isOpen={isBimbinganKPModalOpen}
+          onClose={handleCloseBimbinganKPModal}
         />
       )}
     </div>
+
   );
 };
 

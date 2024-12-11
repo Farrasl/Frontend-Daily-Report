@@ -1,7 +1,7 @@
 import { Document, Schema, model, models, Types } from "mongoose";
 
 // Definisikan interface untuk dokumen Bimbingan
-interface IBimbingan extends Document {
+export interface IBimbingan extends Document {
   nim: string;
   nip: string;
   tanggal: Date;

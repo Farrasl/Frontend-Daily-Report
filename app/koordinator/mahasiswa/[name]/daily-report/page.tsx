@@ -215,52 +215,59 @@ const DailyReportPage = ({ params }: { params: Promise<{ name: string }> }) => {
         {/* Daily Report Section */}
         <div className="mt-6 px-6 pb-8">
           <h2 className="text-xl font-bold mb-4">Laporan Harian</h2>
-          <div className="bg-[#D9F9FF] rounded-xl shadow-md overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-[#F0F9FF] border-b">
-                <tr>
-                  <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Agenda
-                  </th>
-                  <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Tanggal
-                  </th>
-                  <th className="py-3 px-4 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+          <div
+            className={`${
+              tasks.length > 5 ? "h-[250px] overflow-y-auto" : "h-auto"
+            } bg-[#D9F9FF] p-4 rounded-[20px] mb-2`}
+          >
+            <div className="bg-[#D9F9FF] rounded-lg overflow-hidden">
+              <table className="w-full text-left table-fixed">
+                <thead>
+                  <tr className="bg-[#D9F9FF]">
+                    <th className="w-1/2 py-4 px-4 sm:px-6 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
+                      All Task
+                    </th>
+                    <th className="w-1/4 py-4 px-4 sm:px-6 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
+                      Date
+                    </th>
+                    <th className="w-1/4 py-4 px-4 sm:px-12 border-b-2 font-semibold text-xs sm:text-sm tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                 {tasks.map((task, index) => (
                   <tr
                     key={index}
                     onClick={() => handleRowClick(index)}
-                    className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer group"
+                    className="hover:bg-[#A1D1DD] transition-colors duration-150 cursor-pointer"
                   >
-                    <td className="py-4 px-4 text-sm text-gray-800">
+                    <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-900">
                       {task.task}
                     </td>
-                    <td className="py-4 px-4 text-sm text-gray-600">
+                    <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-gray-600">
                       {task.date}
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-4 sm:px-12">
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                        className={`inline-block px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium ${
                           task.status === "Diterima"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
                         }`}
                       >
                         {task.status}
                       </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
+      
       {/* Review Modal */}
       {selectedTaskIndex !== null && (
         <ReviewModal

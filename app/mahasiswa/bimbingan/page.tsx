@@ -1,55 +1,48 @@
 "use client";
 
-import React, { useState } from "react";
-import BimbinganModal from "../../../components/mahasiswa/BimbinganModal";
-
-// Define the type for each item in BimbinganHistory
-type BimbinganHistoryItem = {
-  tanggal: string;
-  status: string;
-  aksi: string;
-  evaluasi: string;
-  nim: string;
-  nama: string;
-  dosenPembimbing: string;
-  pembimbingInstansi: string;
-  statusPenerimaan: string;
-};
+import React, { useState, useEffect } from "react";
+import BimbinganModal from "@/components/mahasiswa/BimbinganModal";
+import { IBimbingan } from "@/models/Bimbingan";
 
 const RiwayatBimbingan = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedData, setSelectedData] = useState<BimbinganHistoryItem | null>(
-    null
-  );
+  const [isBimbinganModalOpen, setIsBimbinganModalOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [selectedData, setSelectedData] = useState<IBimbingan | null>(null);
 
-  const BimbinganHistory: BimbinganHistoryItem[] = [
-    {
-      tanggal: "Sabtu, 29 Oktober 2024",
-      status: "done",
-      aksi: "Lihat",
-      evaluasi: "Kerja sama tim baik.",
-      nim: "12250111",
-      nama: "Abmi Sukma",
-      dosenPembimbing: "Pizaini",
-      pembimbingInstansi: "Yelvi Fitriani",
-      statusPenerimaan: "Diterima",
-    },
-    {
-      tanggal: "Senin, 1 November 2024",
-      status: "pending",
-      aksi: "Lihat",
-      evaluasi: "Perlu peningkatan pada laporan.",
-      nim: "12250111",
-      nama: "Abmi Sukma",
-      dosenPembimbing: "Pizaini",
-      pembimbingInstansi: "Yelvi Fitriani",
-      statusPenerimaan: "Menunggu",
-    },
-  ];
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchBimbinganData = async () => {
+      try {
+        const response = await fetch("/api/bimbingan");
+        if (!response.ok) {
+          throw new Error("Failed to fetch bimbingan data");
+        }
+        const data = await response.json();
+        setData(data);
+      } catch (error) {
+        console.error("Error fetching bimbingan data:", error);
+      }
+    };
+    fetchBimbinganData();
+  }, []);
 
-  const handleViewClick = (data: BimbinganHistoryItem) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const handleOpenBimbinganModal = (data: IBimbingan) => {
     setSelectedData(data);
-    setIsModalOpen(true);
+    setIsBimbinganModalOpen(true);
+  };
+
+  const handleCloseBimbinganModal = () => {
+    setIsBimbinganModalOpen(false);
   };
 
   return (
@@ -62,23 +55,23 @@ const RiwayatBimbingan = () => {
         {/* Mobile view - Card layout */}
         <div className="block sm:hidden">
           <div className="space-y-4">
-            {BimbinganHistory.map((item, index) => (
+            {data.map((item: { tanggal: Date, status: string, komentar: string}, index) => (
               <div 
                 key={index} 
                 className="bg-[#D9F9FF] rounded-lg p-4 shadow-sm"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-medium text-[#323232]">{item.tanggal}</p>
+                  <span className="text-gray-700">{formatDate(item.tanggal.toString())}</span>
                   <button
                     className="text-[#2C707B] hover:text-[#9FD8E4] text-sm font-medium focus:outline-none"
-                    onClick={() => handleViewClick(item)}
+                    onClick={() => handleOpenBimbinganModal(data[index])}
                   >
-                    {item.aksi}
+                    Lihat
                   </button>
                 </div>
                 <div className="text-sm text-gray-600">
                   <p>Status: {item.status}</p>
-                  <p className="truncate">Evaluasi: {item.evaluasi}</p>
+                  <p className="truncate">Evaluasi: {item.komentar}</p>
                 </div>
               </div>
             ))}
@@ -96,23 +89,19 @@ const RiwayatBimbingan = () => {
                 </tr>
               </thead>
               <tbody>
-                {BimbinganHistory.map((item, index) => (
+                {data.map((item: { tanggal: Date}, index) => (
                   <tr 
                     key={index} 
                     className="border-t border-sky-100 transition-colors"
                   >
-                    <td className="py-3 px-4 text-[#323232]">{item.tanggal}</td>
+                    <td className="py-3 px-4 text-gray-700">{formatDate(item.tanggal.toString())}</td>
                     <td className="py-3 px-4 text-right">
-                      {item.aksi === "Lihat" ? (
-                        <button
-                          className="inline-flex items-center text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none transition-colors"
-                          onClick={() => handleViewClick(item)}
-                        >
-                          <span>{item.aksi}</span>
-                        </button>
-                      ) : (
-                        <span className="text-[#C5C5C5]">{item.aksi}</span>
-                      )}
+                      <button
+                        className="inline-flex items-center text-[#2C707B] hover:text-[#9FD8E4] font-medium focus:outline-none transition-colors"
+                        onClick={() => handleOpenBimbinganModal(data[index])}
+                      >
+                        <span>Lihat</span>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -122,11 +111,14 @@ const RiwayatBimbingan = () => {
         </div>
       </div>
 
-      <BimbinganModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={selectedData}
-      />
+      {/* Modals */}
+      {isBimbinganModalOpen && selectedData && (
+        <BimbinganModal
+          isOpen={isBimbinganModalOpen}
+          onClose={handleCloseBimbinganModal}
+          data={selectedData}
+        />
+      )}
     </div>
   );
 };

@@ -1,21 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
-
-interface BimbinganData {
-  tanggal: string;
-  nim: string;
-  nama: string;
-  dosenPembimbing: string;
-  pembimbingInstansi: string;
-  evaluasi: string;
-  statusPenerimaan: string;
-}
+import  { useEffect } from "react";
+import { IBimbingan } from "@/models/Bimbingan";
 
 interface BimbinganModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: BimbinganData | null;
+  data: IBimbingan | null;
 }
 
 const BimbinganModal = ({
@@ -30,6 +21,16 @@ const BimbinganModal = ({
       document.body.style.overflow = "auto";
     }
   }, [isOpen]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   if (!isOpen || !data) return null;
 
@@ -61,42 +62,42 @@ const BimbinganModal = ({
               <div className="flex items-center justify-between">
                 <span className="font-medium text-gray-700">{data.nim}</span>
                 <div className="flex items-center">
-                  <div
+                   <div
                     className={`w-3 h-3 rounded-full ${
-                      data.statusPenerimaan === "Diterima"
+                      data.status === "Diterima"
                         ? "bg-green-500"
                         : "bg-red-500"
                     } mr-2`}
                   ></div>
-                  <span className="text-sm text-gray-500">{data.statusPenerimaan}</span>
-                </div>
+                  <span className="text-sm text-gray-500">{data.status}</span>
+                </div> 
               </div>
             </div>
 
             {/* Nama Mahasiswa */}
             <div className="space-y-2">
               <div className="text-sm text-gray-500">NAMA MAHASISWA</div>
-              <div className="font-medium text-gray-700">{data.nama}</div>
+              <div className="font-medium text-gray-700"></div>
             </div>
 
             {/* Dosen Pembimbing */}
             <div className="space-y-2">
               <div className="text-sm text-gray-500">DOSEN PEMBIMBING</div>
-              <div className="font-medium text-gray-700">{data.dosenPembimbing}</div>
+              <div className="font-medium text-gray-700"></div>
             </div>
 
             {/* Pembimbing Instansi */}
             <div className="space-y-2">
               <div className="text-sm text-gray-500">PEMBIMBING INSTANSI</div>
-              <div className="font-medium text-gray-700">{data.pembimbingInstansi}</div>
+              <div className="font-medium text-gray-700"></div>
             </div>
 
             <div className="border-t mt-6 pt-6">
               {/* Evaluasi Bimbingan */}
               <div className="text-sm text-gray-500 mb-2">EVALUASI Bimbingan</div>
               <div className="border rounded-lg p-4 bg-gray-50">
-                <div className="font-medium text-gray-700 mb-2">{data.tanggal}</div>
-                <div className="text-sm text-gray-600">{data.evaluasi}</div>
+                <div className="font-medium text-gray-700 mb-2">{formatDate(data.tanggal.toString())}</div>
+                <div className="text-sm text-gray-600">{data.komentar}</div>
               </div>
             </div>
           </div>

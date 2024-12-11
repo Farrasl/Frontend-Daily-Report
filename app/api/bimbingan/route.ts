@@ -3,7 +3,7 @@ import Bimbingan from "@/models/Bimbingan";
 import { NextResponse } from "next/server";
 
 
-class EvaluasiController {
+class BimbinganController {
   async connectDB() {
     try {
       await MongoDB.connect(); // Menghubungkan ke database
@@ -16,10 +16,10 @@ class EvaluasiController {
   async getAll() {
     await this.connectDB();
     try {
-      const evaluasi = await Bimbingan.findAll();
-      return NextResponse.json(evaluasi, { status: 200 });
+      const bimbingan = await Bimbingan.findAll();
+      return NextResponse.json(bimbingan, { status: 200 });
     } catch (error: any) {
-      console.error("Error fetching DailyReports:", error);
+      console.error("Error fetching Bimbingan:", error);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
   }
@@ -46,7 +46,7 @@ class EvaluasiController {
       const newBimbingan = await Bimbingan.create(data);
       return NextResponse.json(newBimbingan,{ status: 201 });
     } catch (error: any) {
-      console.error("Error creating Evaluasi:", error);
+      console.error("Error creating Bimbingan:", error);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
   }
@@ -60,15 +60,15 @@ class EvaluasiController {
         return NextResponse.json({ message: "ID (_id) is required" }, { status: 400 });
       }
 
-      const updatedEvaluasi = await Bimbingan.update(_id, data);
+      const updatedBimbingan = await Bimbingan.update(_id, data);
 
-      if (!updatedEvaluasi) {
-        return NextResponse.json({ message: "Evaluasi not found" }, { status: 404 });
+      if (!updatedBimbingan) {
+        return NextResponse.json({ message: "Bimbingan not found" }, { status: 404 });
       }
 
-      return NextResponse.json(updatedEvaluasi, { status: 200 });
+      return NextResponse.json(updatedBimbingan, { status: 200 });
     } catch (error: any) {
-      console.error("Error updating Evaluasi:", error);
+      console.error("Error updating Bimbingan:", error);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
   }
@@ -83,35 +83,35 @@ class EvaluasiController {
         return NextResponse.json({ message: "ID (_id) is required" }, { status: 400 });
       }
 
-      const deletedEvaluasi = await Bimbingan.delete(_id);
+      const deletedBimbingan = await Bimbingan.delete(_id);
 
-      if (!deletedEvaluasi) {
-        return NextResponse.json({ message: "Evaluasi not found" }, { status: 404 });
+      if (!deletedBimbingan) {
+        return NextResponse.json({ message: "Bimbingan not found" }, { status: 404 });
       }
 
-      return NextResponse.json({ message: "Evaluasi deleted successfully" }, { status: 200 });
+      return NextResponse.json({ message: "Bimbingan deleted successfully" }, { status: 200 });
       
     } catch (error: any) {
-      console.error("Error deleting Evaluasi:", error);
+      console.error("Error deleting Bimbingan:", error);
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
   }
 }
 
-const evaluasiController = new EvaluasiController();
+const bimbinganController = new BimbinganController();
 
 export async function GET() {
-    const response = await evaluasiController.getAll();
+    const response = await bimbinganController.getAll();
     return response; // Kembalikan objek NextResponse langsung
   }
 export async function POST(req: Request) {
-  return evaluasiController.create(req);
+  return bimbinganController.create(req);
 }
 
 export async function PUT(req: Request) {
-  return evaluasiController.update(req);
+  return bimbinganController.update(req);
 }
 
 export async function DELETE(req: Request) {
-  return evaluasiController.delete(req);
+  return bimbinganController.delete(req);
 }
