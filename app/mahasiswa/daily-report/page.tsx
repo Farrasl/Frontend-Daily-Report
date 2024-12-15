@@ -103,6 +103,17 @@ const DailyReportPage = () => {
     });
   };
 
+  useEffect(() => {
+    const today = new Date();
+    const options: any = {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    };
+    setCurrentDate(today.toLocaleDateString("id-ID", options));
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex-1 h-screen bg-white flex items-center justify-center">
@@ -124,13 +135,13 @@ const DailyReportPage = () => {
 
   return (
     <div className="flex-1 h-screen bg-white">
-      <div className="px-8">
-        <div className="mt-8 mb-4">
-          <h1 className="text-2xl font-bold">Daily Report</h1>
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl pt-16 lg:pt-0 mx-auto">
+        <div className="my-4 sm:my-8">
+          <h1 className="text-xl sm:text-2xl font-bold">Daily Report</h1>
           <p className="text-[#C5C5C5]">{currentDate}</p>
         </div>
         <div className="flex justify-end">
-          <button className="bg-[#FFBF5F] text-black py-2 px-4 rounded-md flex items-center gap-2 mb-4">
+          <button className="bg-[#FFBF5F] text-black py-2 px-4 rounded-md flex items-center gap-2 mb-2">
             <svg
               width="25"
               height="24"
@@ -160,7 +171,7 @@ const DailyReportPage = () => {
         </div>
         <div
           className={`${
-            tasks.length > 5 ? "h-[590px] overflow-y-auto" : "h-auto"
+            tasks.length > 5 ? "h-[555px] overflow-y-auto" : "h-auto"
           } bg-[#D9F9FF] p-4 rounded-[20px] mb-8`}
         >
           <div className="bg-[#D9F9FF] rounded-lg overflow-hidden">

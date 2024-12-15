@@ -162,10 +162,10 @@ export default function RootLayout({
       )}
 
       {/* Mobile Burger Menu */}
-      <div className="lg:hidden w-full bg-[#9FD8E4] p-3 fixed z-20">
+      <div className="lg:hidden w-full bg-primary p-3 fixed z-20">
         <button
           onClick={() => setIsBurgerOpen(!isBurgerOpen)}
-          className="p-2 hover:bg-[#FFBF5F] rounded-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+          className="p-2 hover:bg-secondary rounded-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
         >
           <svg
             width="24"
@@ -228,7 +228,7 @@ export default function RootLayout({
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col gap-5 w-full lg:w-[80px] h-auto lg:h-[96vh] lg:ml-[22px] bg-[#9FD8E4] p-3 rounded-[20px] transition-all">
+      <div className="hidden lg:flex lg:flex-col gap-5 w-full lg:w-[80px] h-auto lg:h-[96vh] lg:ml-[22px] bg-primary p-3 rounded-[20px] transition-all">
         <div className="nav mt-[200px] flex-1">
           <div className="menu">
             <ul className="flex flex-col gap-5">
@@ -236,7 +236,7 @@ export default function RootLayout({
                 <li key={index} className="relative group">
                   <Link
                     href={item.href}
-                    className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-[#FFBF5F]"
+                    className="flex items-center justify-center gap-2 text-sm font-medium text-gray-500 p-3 rounded-md transition-all hover:bg-secondary"
                   >
                     {item.icon}
                     <span className="absolute left-[70px] top-1/2 transform -translate-y-1/2 p-2 text-white bg-[#2C707B] opacity-0 invisible transition-all group-hover:left-[75px] group-hover:opacity-100 group-hover:visible rounded-[10px] z-50">

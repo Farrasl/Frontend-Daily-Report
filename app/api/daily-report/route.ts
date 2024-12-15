@@ -1,16 +1,8 @@
 import MongoDB from "@/libs/mongodb";
-import DailyReport, { IDailyReport } from "@/models/DailyReport";
+import DailyReport from "@/models/DailyReport";
 import { NextResponse } from "next/server";
-import fs from "fs";
-import GridFS from "@/models/GridFS"; // Mengimpor kelas GridFS
-import { UpdateQuery } from "mongoose";  // Impor UpdateQuery
 
 class DailyReportController {
-  private gridFs: GridFS;
-
-  constructor() {
-    this.gridFs = new GridFS(process.env.MONGO_URI!, "test"); // Ganti dengan URI dan nama database yang sesuai
-  }
 
   async connectDB() {
     try {
@@ -33,7 +25,7 @@ class DailyReportController {
   }
 
   validateCreatePayload(data: any) {
-    const requiredFields = ["tanggal", "status", "agenda"];
+    const requiredFields = ["tanggal", "agenda"];
 
     for (const field of requiredFields) {
       if (!data[field]) {
@@ -48,6 +40,7 @@ class DailyReportController {
           "waktuSelesai",
           "judulAgenda",
           "deskripsiAgenda",
+          "files",
         ];
         for (const field of agendaFields) {
           if (!agenda[field]) {
@@ -139,48 +132,6 @@ class DailyReportController {
     }
   }
 
-  // Metode baru untuk mengunggah dokumentasi (gambar)
-  async uploadDocumentation(req: Request) {
-    await this.connectDB();
-    try {
-      const { dailyReportId, file } = await req.json(); // Mendapatkan file dan ID report dari payload
-  
-      if (!dailyReportId || !file) {
-        return NextResponse.json(
-          { message: "dailyReportId and file are required" },
-          { status: 400 }
-        );
-      }
-  
-      // Menyimpan file ke GridFS
-      const fileStream = fs.createReadStream(file.path); // Mengambil path file
-      const fileId = await this.gridFs.uploadFile(
-        file.name,
-        fileStream,
-        file.type
-      );
-  
-      // Menggunakan findByIdAndUpdate untuk menggunakan $push dengan benar
-      const updateQuery: UpdateQuery<IDailyReport> = {
-        $push: {
-          "agenda.$[].dokumentasi": {
-            filePath: fileId,
-            fileType: file.type,
-          },
-        },
-      };
-  
-      // Pembaruan dengan menggunakan UpdateQuery
-      await DailyReport.findByIdAndUpdate(dailyReportId, updateQuery, { new: true });
-  
-      return NextResponse.json({ fileId }, { status: 201 });
-    } catch (error: any) {
-      console.error("Error uploading documentation:", error);
-      return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-  }
-  
-  
 }
 
 const dailyReportController = new DailyReportController();
@@ -200,9 +151,4 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   return dailyReportController.delete(req);
-}
-
-// Tambahkan endpoint baru untuk upload file
-export async function POST_UPLOAD(req: Request) {
-  return dailyReportController.uploadDocumentation(req);
 }

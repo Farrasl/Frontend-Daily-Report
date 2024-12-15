@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
+import { CldUploadWidget } from "next-cloudinary";
+import  NotificationPopup  from "@/components/NotificationPopUp";
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -14,14 +16,13 @@ interface DayInfo {
   isToday: boolean;
   isSelected: boolean;
 }
-
 interface Agenda {
   waktuMulai: string;
   waktuSelesai: string;
   judulAgenda: string;
   deskripsiAgenda: string;
-  files: File[];
   date: Date;
+  files: String[];
 }
 
 const MONTHS = [
@@ -47,13 +48,21 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
     waktuSelesai: "",
     judulAgenda: "",
     deskripsiAgenda: "",
-    files: [],
     date: new Date(),
+    files: [],
   });
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  } | null>(null);
+  
+  const showNotification = (message: string, type: "success" | "error" | "warning" | "info" = "success") => {
+  setNotification({ message, type });
+};
 
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [agendaList, setAgendaList] = useState<Agenda[]>([]);
 
@@ -127,43 +136,24 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
     }
   };
 
-  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    const newFiles = event.target.files ? Array.from(event.target.files) : [];
-    
-    // Validasi tipe file
-    const allowedTypes = ['image/jpeg', 'image/png'];
-    const maxFileSize = 5 * 1024 * 1024; // 5 MB
-  
-    const validFiles = newFiles.filter(file => {
-      const isValidType = allowedTypes.includes(file.type);
-      const isValidSize = file.size <= maxFileSize;
-      
-      if (!isValidType) {
-        alert(`Tipe file tidak valid: ${file.name}`);
-      }
-      
-      if (!isValidSize) {
-        alert(`Ukuran file terlalu besar: ${file.name}`);
-      }
-      
-      return isValidType && isValidSize;
-    });
-  
-    setAgenda((prev) => ({ ...prev, files: [...prev.files, ...validFiles] }));
+  const handleImageUpload = (result: any) => {
+    if (result.event === "success") {
+      const uploadedImageUrl = result.info.secure_url;
+      setAgenda((prev) => ({
+        ...prev,
+        files: [...(prev.files || []), uploadedImageUrl],
+      }));
+    }
   };
 
-  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const droppedFiles = event.dataTransfer.files
-      ? Array.from(event.dataTransfer.files)
-      : [];
+  // New method to remove an image
+  const handleRemoveImage = (urlToRemove: string) => {
     setAgenda((prev) => ({
       ...prev,
-      files: [...prev.files, ...droppedFiles],
+      files: prev.files?.filter((url) => url !== urlToRemove),
     }));
   };
+
   const handleTambahAgenda = () => {
     // Validate fields
     if (
@@ -171,19 +161,30 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
       !Agenda.waktuSelesai ||
       !Agenda.judulAgenda ||
       !Agenda.deskripsiAgenda ||
+      !Agenda.files ||
       Agenda.files.length === 0
     ) {
-      alert("Semua field agenda harus diisi.");
+      setNotification({
+        message: "Semua field harus diisi, termasuk minimal satu gambar.", // Updated error message
+        type: "error"
+      });
       return;
     }
-  
+
     // Add the agenda to the list
     setAgendaList((prev) => {
       const updatedAgendaList = [...prev, Agenda];
-      console.log("Agenda list updated:", updatedAgendaList);  // Debugging line
+      console.log("Agenda list updated:", updatedAgendaList);
+      
+      // Show success notification
+      setNotification({
+        message: "Agenda berhasil ditambahkan.",
+        type: "success"
+      });
+
       return updatedAgendaList;
     });
-  
+
     // Reset agenda fields, but keep the date
     setAgenda((prev) => ({
       ...prev,
@@ -193,36 +194,46 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
       deskripsiAgenda: "",
       files: [],
     }));
-  };  
-  
+  };
+
   const handleSubmit = async () => {
-    // Jika belum ada agenda dalam daftar, tambahkan Agenda saat ini
-    if (agendaList.length === 0) {
-      setAgendaList((prev) => [...prev, Agenda]);
-    }
-  
     // Pastikan ada agenda untuk disimpan
     if (agendaList.length === 0 && !Agenda.judulAgenda) {
-      alert("Minimal tambahkan satu agenda.");
+      setNotification({
+        message: "Minimal tambahkan satu agenda.",
+        type: "error"
+      });
       return;
     }
-  
+
+      // Tambahkan validasi untuk memastikan setiap agenda memiliki file
+  const agendasToSubmit = [...agendaList, Agenda];
+  const incompleteAgendas = agendasToSubmit.filter(
+    (agenda) => !agenda.files || agenda.files.length === 0
+  );
+
+  if (incompleteAgendas.length > 0) {
+    setNotification({
+      message: "Setiap agenda harus memiliki minimal satu gambar.",
+      type: "error"
+    });
+    return;
+  }
+
     // Siapkan data yang akan dikirim
     const requestBody = {
       tanggal: Agenda.date.toISOString(),
-      status: "Belum",
-      agenda: [...agendaList, Agenda].map((agenda) => ({
-        waktuMulai: agenda.waktuMulai,
-        waktuSelesai: agenda.waktuSelesai,
-        judulAgenda: agenda.judulAgenda,
-        deskripsiAgenda: agenda.deskripsiAgenda,
-        dokumentasi: agenda.files.map((file) => ({
-          filePath: file.name,
-          fileType: file.type,
-        })),
-      })),
+      agenda: await Promise.all(
+        [...agendaList, Agenda].map(async (agenda) => ({
+          waktuMulai: agenda.waktuMulai,
+          waktuSelesai: agenda.waktuSelesai,
+          judulAgenda: agenda.judulAgenda,
+          deskripsiAgenda: agenda.deskripsiAgenda,
+          files: agenda.files,
+        }))
+      ),
     };
-  
+
     try {
       const response = await fetch("/api/daily-report", {
         method: "POST",
@@ -230,21 +241,32 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
         body: JSON.stringify(requestBody),
       });
   
+      console.log("Response status:", response.status); // Tambahkan ini
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
   
-      alert("Task berhasil disimpan.");
-      onClose();
+      console.log("Notification should show now"); // Tambahkan ini
+      setNotification({
+        message: "Task berhasil disimpan.",
+        type: "success"
+      });
+  
+
     } catch (error) {
-      alert(`Gagal menyimpan task: ${error}`);
+      console.error("Submit error:", error); // Tambahkan ini untuk melacak error
+      setNotification({
+        message: `Gagal menyimpan task: ${error}`,
+        type: "error"
+      });
     }
   };
-  
-  
-  if (!isOpen) return null; 
+
+  if (!isOpen) return null;
 
   return (
+    <>
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-4 w-[90%] md:max-w-[1000px] relative">
         <button
@@ -467,82 +489,45 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
             </div>
           </div>
 
-          {/* File Upload Section */}
-          <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1.5">
-              Upload File
-            </label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              multiple
-              className="hidden"
-            />
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDragEnter={(e) => e.preventDefault()}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-              className="border-2 border-dashed rounded-md p-4 text-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-              style={{ position: "relative", height: "125px", width: "100%" }} // Ensure the box has a fixed height
+          {/* File Upload Section - Updated */}
+          <div className="space-y-4 flex flex-col items-center">
+            {/* Upload Button Section */}
+            <CldUploadWidget
+              signatureEndpoint="/api/dokumentasi"
+              onSuccess={handleImageUpload}
             >
-              <div className="flex justify-center mb-1">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-gray-400"
+              {({ open }) => (
+                <button
+                  onClick={() => open()}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-              </div>
-              <p className="text-xs text-gray-500">
-                {Agenda.files.length > 0
-                  ? `${Agenda.files.length} file(s) selected`
-                  : "Select Files or Drag and Drop"}
-              </p>
-              {Agenda.files.length > 0 && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {Agenda.files.map(
-                    (file, index) =>
-                      file.type.startsWith("image/") && (
-                        <div
-                          key={index}
-                          className="relative w-full h-full flex items-center justify-center"
-                        >
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={`Preview of ${file.name}`}
-                            className="object-contain max-w-full max-h-full rounded"
-                            style={{
-                              objectFit: "contain", // Ensures the image fits within the box without distortion
-                            }}
-                          />
-                          {/* Delete Button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevents triggering the file input click
-                              setAgenda((prev) => ({
-                                ...prev,
-                                files: prev.files.filter((_, i) => i !== index),
-                              }));
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      )
-                  )}
-                </div>
+                  Upload Gambar
+                </button>
               )}
-            </div>
+            </CldUploadWidget>
+
+            {/* Image Preview Section */}
+            {Agenda.files && Agenda.files.length > 0 && (
+              <div className="mt-4 w-full">
+                <div className="flex flex-wrap justify-center gap-2">
+                  {Agenda.files.map((fileUrl, index) => (
+                    <div key={`uploaded-image-${index}`} className="relative">
+                      <img
+                        src={String(fileUrl)}
+                        alt="Uploaded"
+                        className="w-24 h-24 object-cover rounded-md"
+                      />
+                      <button
+                        onClick={() => handleRemoveImage(fileUrl.toString())}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* judulAgenda Input */}
@@ -629,6 +614,15 @@ const AddTaskModal = ({ isOpen, onClose }: AddTaskModalProps) => {
         </div>
       </div>
     </div>
+          {/* Notification Popup */}
+          {notification && (
+            <NotificationPopup 
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification(null)}
+            />
+          )}
+          </>
   );
 };
 

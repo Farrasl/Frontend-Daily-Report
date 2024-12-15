@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IDailyReport, IDokumentasi } from "@/models/DailyReport";
+import { IDailyReport } from "@/models/DailyReport";
 import { IEvaluasiDailyReport } from "@/models/Evaluasi";
 import AddAgendaModal from "../../components/mahasiswa/AddAgendaModal";
-import Image from "next/image";
+
+interface AgendaWithFiles {
+  waktuMulai: string;
+  waktuSelesai: string;
+  judulAgenda: string;
+  deskripsiAgenda: string;
+  files?: string[];
+}
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -23,7 +30,6 @@ const formatDate = (dateString: string) => {
 };
 
 const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
-  const [dokumentasiList, setDokumentasiList] = useState<IDokumentasi[]>([]);
   const [evaluasi, setEvaluasi] = useState<IEvaluasiDailyReport | null>(null);
   const [evaluasiStatus, setEvaluasiStatus] = useState<string>("Belum");
   const [showAddAgendaModal, setShowAddAgendaModal] = useState(false);
@@ -32,25 +38,27 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
     if (!dailyReport?._id) return;
 
     try {
-      const response = await fetch(`/api/evaluasi?dailyreportId=${dailyReport._id}`);
+      const response = await fetch(
+        `/api/evaluasi?dailyreportId=${dailyReport._id}`
+      );
 
       if (!response.ok) {
         throw new Error("Gagal mengambil evaluasi");
       }
 
       const data = await response.json();
-      
+
       // Filter evaluasi berdasarkan dailyreportId yang sesuai
       const matchingEvaluasi = data.find(
-        (evaluasi: IEvaluasiDailyReport) => 
+        (evaluasi: IEvaluasiDailyReport) =>
           evaluasi.dailyreportId?.toString() === dailyReport._id.toString()
       );
 
       setEvaluasi(matchingEvaluasi || null);
-      
+
       // Logika penentuan status
       const status = matchingEvaluasi?.status?.trim().toLowerCase();
-      if (!status || status === '' || status === 'belum') {
+      if (!status || status === "" || status === "belum") {
         setEvaluasiStatus("Belum");
       } else {
         setEvaluasiStatus(matchingEvaluasi.status);
@@ -152,7 +160,9 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        evaluasiStatus === "Diterima" ? "bg-green-500" : "bg-red-500"
+                        evaluasiStatus === "Diterima"
+                          ? "bg-green-500"
+                          : "bg-red-500"
                       }`}
                     ></div>
                     <p className="font-medium text-sm">{evaluasiStatus}</p>
@@ -160,38 +170,28 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
                 </div>
 
                 {/* Dokumentasi Section */}
-                <div className="mt-4">
-                  <h3 className="text-sm text-gray-500 mb-2">DOKUMENTASI</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    {dokumentasiList.map((dok, index) => {
-                      // Periksa apakah file adalah gambar
-                      const isImage = dok.fileType.startsWith("image/");
-
-                      return isImage ? (
-                        <div
-                          key={index}
-                          className="relative w-full aspect-square"
-                        >
-                          <Image
-                            src={`data:${dok.fileType};base64,${dok.data}`}
-                            alt={`Dokumentasi ${index + 1}`}
-                            fill
-                            className="object-cover rounded-lg"
+                <div className="grid grid-cols-3 gap-4">
+                  {agenda &&
+                    (agenda as AgendaWithFiles[]).flatMap(
+                      (ag: AgendaWithFiles, agendaIndex) =>
+                        ag.files?.map((fileUrl: string, fileIndex: number) => (
+                          <img
+                            key={`dokumentasi-${agendaIndex}-${fileIndex}`} // Membuat kunci yang unik
+                            src={fileUrl}
+                            alt={`Dokumentasi ${agendaIndex + 1}-${
+                              fileIndex + 1
+                            }`}
+                            className="w-full h-24 object-cover rounded-lg"
+                            onError={(e) => {
+                              const imgElement = e.target as HTMLImageElement;
+                              imgElement.src = "/placeholder-image.png"; // Provide a fallback image
+                            }}
                           />
-                        </div>
-                      ) : (
-                        <a
-                          key={index}
-                          href={`data:${dok.fileType};base64,${dok.data}`}
-                          download={dok.filePath}
-                          className="bg-blue-100 p-2 rounded-lg text-blue-600 hover:bg-blue-200"
-                        >
-                          Download {dok.filePath}
-                        </a>
-                      );
-                    })}
-                  </div>
+                        )) || []
+                    )}
                 </div>
+
+                {/* End Dokumentasi Section */}
               </div>
               <div className="flex justify-between items-start -mb-4">
                 <h2 className="text-xs sm:text-sm text-gray-500">
@@ -262,7 +262,11 @@ const ReviewModal = ({ isOpen, onClose, dailyReport }: ReviewModalProps) => {
             </div>
             <div className="bg-white border-4 border-[#9FD8E4] p-4 rounded-lg">
               <p className="text-gray-700 text-xs sm:text-sm mt-2 font-serif">
-                {komentar ? komentar : <span className="text-gray-500">Belum ada Evaluasi</span>}
+                {komentar ? (
+                  komentar
+                ) : (
+                  <span className="text-gray-500">Belum ada Evaluasi</span>
+                )}
               </p>
             </div>
           </div>
